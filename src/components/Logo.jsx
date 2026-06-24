@@ -19,7 +19,7 @@ export default function Logo({ className = "h-10", showText = true }) {
       {showText && (
         <span className="font-extrabold text-2xl tracking-tight font-outfit">
           <span className="text-emerald-600">Tap</span>
-          <span className="text-slate-850">Go</span>
+          <span className="text-slate-900">Go</span>
         </span>
       )}
     </div>

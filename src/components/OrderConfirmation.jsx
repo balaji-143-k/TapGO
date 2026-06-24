@@ -75,7 +75,7 @@ _Please confirm this order ASAP!_`;
 
         {/* Success Message */}
         <div className="space-y-2">
-          <h2 className="text-xl font-black text-slate-850 tracking-tight font-outfit">
+          <h2 className="text-xl font-black text-slate-900 tracking-tight font-outfit">
             {t('successTitle')}
           </h2>
           <p className="text-xs text-slate-500 max-w-xs mx-auto leading-normal font-semibold">
@@ -85,12 +85,12 @@ _Please confirm this order ASAP!_`;
 
         {/* Savings Celebration Box */}
         {totalSavings > 0 && (
-          <div className="bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 rounded-2xl p-3.5 text-slate-800 text-xs font-bold flex items-center justify-between text-left shadow-xs">
+          <div className="bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 border border-emerald-500/20 rounded-2xl p-3.5 text-slate-800 text-xs font-bold flex items-center justify-between text-left shadow-sm">
             <div>
               <span className="text-[10px] text-emerald-800 font-black uppercase tracking-wider block mb-0.5">💰 Sourcing Savings</span>
-              <span className="text-slate-550 font-medium">You saved compared to market:</span>
+              <span className="text-slate-500 font-medium">You saved compared to market:</span>
             </div>
-            <span className="text-base font-black text-emerald-700 bg-white border border-emerald-100 py-1 px-3 rounded-xl shadow-xs">
+            <span className="text-base font-black text-emerald-700 bg-white border border-emerald-100 py-1 px-3 rounded-xl shadow-sm">
               ₹{totalSavings}
             </span>
           </div>
@@ -105,9 +105,9 @@ _Please confirm this order ASAP!_`;
             </span>
           </div>
 
-          <div className="grid grid-cols-3 gap-y-2.5 text-slate-650 font-semibold">
+          <div className="grid grid-cols-3 gap-y-2.5 text-slate-600 font-semibold">
             <div className="text-slate-400 font-bold">{t('orderId')}</div>
-            <div className="col-span-2 text-right font-black text-slate-850">{order.orderId}</div>
+            <div className="col-span-2 text-right font-black text-slate-900">{order.orderId}</div>
             
             <div className="text-slate-400 font-bold">{t('date')}</div>
             <div className="col-span-2 text-right text-slate-700 text-[10px]">{order.date}</div>
@@ -149,14 +149,14 @@ _Please confirm this order ASAP!_`;
             </div>
           </div>
 
-          <div className="border-t border-slate-200 pt-3 flex justify-between items-center font-black text-sm text-slate-850">
+          <div className="border-t border-slate-200 pt-3 flex justify-between items-center font-black text-sm text-slate-900">
             <span>{t('grandTotal')}</span>
             <span className="text-emerald-700 text-base">₹{order.totalAmount}</span>
           </div>
         </div>
 
         {/* Attractive notes to purchase again */}
-        <div className="bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-100 rounded-2xl p-4 space-y-2">
+        <div className="bg-linear-to-br from-emerald-50 to-green-50 border border-emerald-100 rounded-2xl p-4 space-y-2">
           <div className="flex items-center justify-center gap-1.5 text-emerald-700 font-black text-xs uppercase tracking-wider">
             <Star size={12} className="fill-emerald-500 text-emerald-500" />
             <span>{lang === 'en' ? 'Thank You for Ordering!' : 'ஆர்டர் செய்தமைக்கு நன்றி!'}</span>
@@ -185,7 +185,7 @@ _Please confirm this order ASAP!_`;
           {/* Back to Shop */}
           <button
             onClick={onBackToStore}
-            className="w-full flex items-center justify-center gap-2 border border-slate-250 hover:bg-slate-50 text-slate-700 font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 transform active:scale-95 cursor-pointer font-outfit text-xs"
+            className="w-full flex items-center justify-center gap-2 border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-3.5 px-4 rounded-xl transition-all duration-200 transform active:scale-95 cursor-pointer font-outfit text-xs"
           >
             <ArrowLeft size={16} />
             <span>{t('backToStore')}</span>

@@ -61,7 +61,7 @@ export default function ProductCard({ product, cartItem, onAddToCart, onUpdateQu
       </div>
 
       {/* Product Details */}
-      <div className="p-4 flex flex-col flex-grow justify-between">
+      <div className="p-4 flex flex-col grow justify-between">
         <div>
           <h3 className={`font-bold text-base mb-1 line-clamp-1 ${
             isOutOfStock ? 'text-slate-400 line-through' : 'text-slate-800'
@@ -69,7 +69,7 @@ export default function ProductCard({ product, cartItem, onAddToCart, onUpdateQu
             {name}
           </h3>
           
-          <p className="text-slate-400 text-[11px] mb-3 line-clamp-2 min-h-[2rem] leading-normal font-medium">
+          <p className="text-slate-400 text-[11px] mb-3 line-clamp-2 min-h-8 leading-normal font-medium">
             {description}
           </p>
         </div>
@@ -120,7 +120,7 @@ export default function ProductCard({ product, cartItem, onAddToCart, onUpdateQu
                 <span>{t('addToCart')}</span>
               </button>
             ) : (
-              <div className="flex items-center justify-between w-full bg-emerald-650 text-white rounded-xl py-1 px-2 shadow-sm">
+              <div className="flex items-center justify-between w-full bg-emerald-600 text-white rounded-xl py-1 px-2 shadow-sm">
                 <button
                   onClick={() => onUpdateQuantity(product.id, quantity - product.minOrder)}
                   className="p-1.5 hover:bg-emerald-700 rounded-lg transition-colors cursor-pointer"

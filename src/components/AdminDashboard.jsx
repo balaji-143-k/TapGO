@@ -164,16 +164,21 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
     setEditingRowId(null);
   };
 
+  const parseSaveValue = (value, fallback) => {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  };
+
   const saveProductRow = (id) => {
     const updated = catalog.map(item => {
       if (item.id === id) {
         return {
           ...item,
-          price: Number(editPrice),
-          marketPrice: Number(editMarketPrice),
-          image: editPhoto,
-          nameEn: editNameEn,
-          nameTa: editNameTa
+          price: parseSaveValue(editPrice, item.price),
+          marketPrice: parseSaveValue(editMarketPrice, item.marketPrice || item.price),
+          image: editPhoto.trim() || item.image,
+          nameEn: editNameEn.trim() || item.nameEn,
+          nameTa: editNameTa.trim() || item.nameTa
         };
       }
       return item;
@@ -254,7 +259,7 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                 className={`p-2 rounded-xl transition-all border cursor-pointer ${
                   showSettings 
                     ? 'bg-slate-100 border-slate-200 text-slate-700' 
-                    : 'border-transparent text-slate-550 hover:bg-slate-550/5'
+                    : 'border-transparent text-slate-500 hover:bg-slate-50'
                 }`}
                 title="System Settings"
               >
@@ -262,21 +267,22 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
               </button>
               <button
                 onClick={loadOrders}
-                className="p-2 text-slate-550 hover:bg-slate-550/5 border border-transparent rounded-xl transition-all cursor-pointer"
+                className="p-2 text-slate-500 hover:bg-slate-50 border border-transparent rounded-xl transition-all cursor-pointer"
                 title="Refresh Orders"
               >
                 <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
               </button>
               <button
                 onClick={onBackToStore}
-                className="hidden sm:flex items-center gap-1.5 px-3 py-2 border border-slate-250 text-slate-650 rounded-xl hover:bg-slate-50 text-sm font-semibold transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 text-sm font-semibold transition-all cursor-pointer"
+                title="Return to Main Store"
               >
                 <ArrowLeft size={16} />
                 <span>{t('backToStore')}</span>
               </button>
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-1.5 px-3 py-2 border border-red-200 text-red-650 rounded-xl hover:bg-red-50 text-sm font-bold transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-2 border border-red-200 text-red-600 rounded-xl hover:bg-red-50 text-sm font-bold transition-all cursor-pointer"
               >
                 <LogOut size={16} />
                 <span className="hidden sm:inline">{t('logout')}</span>
@@ -291,7 +297,7 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
         
         {/* Status Alerts / Updates Toast */}
         {statusMessage && (
-          <div className="mb-4 bg-emerald-650 text-white rounded-xl p-3 text-center text-sm font-bold shadow-md animate-fade-in">
+          <div className="mb-4 bg-emerald-600 text-white rounded-xl p-3 text-center text-sm font-bold shadow-md animate-fade-in">
             {statusMessage}
           </div>
         )}
@@ -306,7 +312,7 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
               </h3>
               <button 
                 onClick={() => setShowSettings(false)}
-                className="text-slate-400 hover:text-slate-650 text-sm font-bold cursor-pointer"
+                className="text-slate-400 hover:text-slate-600 text-sm font-bold cursor-pointer"
               >
                 Close
               </button>
@@ -358,8 +364,8 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
 
         {/* Stats Panel */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white border border-slate-200/60 p-4 rounded-2xl shadow-xs flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-emerald-50 text-emerald-650">
+          <div className="bg-white border border-slate-200/60 p-4 rounded-2xl shadow-sm flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-emerald-50 text-emerald-700">
               <DollarSign size={24} />
             </div>
             <div>
@@ -368,8 +374,8 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200/60 p-4 rounded-2xl shadow-xs flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-blue-50 text-blue-650">
+          <div className="bg-white border border-slate-200/60 p-4 rounded-2xl shadow-sm flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-blue-50 text-blue-700">
               <ShoppingBag size={24} />
             </div>
             <div>
@@ -378,8 +384,8 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200/60 p-4 rounded-2xl shadow-xs flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-amber-50 text-amber-650">
+          <div className="bg-white border border-slate-200/60 p-4 rounded-2xl shadow-sm flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-amber-50 text-amber-700">
               <Clock size={24} />
             </div>
             <div>
@@ -388,8 +394,8 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200/60 p-4 rounded-2xl shadow-xs flex items-center gap-4">
-            <div className={`p-3 rounded-xl ${getGoogleSheetsUrl() ? 'bg-emerald-50 text-emerald-650' : 'bg-rose-50 text-rose-500'}`}>
+          <div className="bg-white border border-slate-200/60 p-4 rounded-2xl shadow-sm flex items-center gap-4">
+            <div className={`p-3 rounded-xl ${getGoogleSheetsUrl() ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-500'}`}>
               <Database size={24} />
             </div>
             <div>
@@ -402,7 +408,7 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
         </div>
 
         {/* Tab Switcher for Orders vs Rates */}
-        <div className="flex border-b border-slate-200 mb-6 bg-white p-1 rounded-2xl border shadow-xs">
+        <div className="flex border-b border-slate-200 mb-6 bg-white p-1 rounded-2xl border shadow-sm">
           <button
             onClick={() => setActiveSubTab('orders')}
             className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 font-outfit ${
@@ -419,7 +425,7 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
             onClick={() => setActiveSubTab('inventory')}
             className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 font-outfit ${
               activeSubTab === 'inventory'
-                ? 'bg-emerald-650 text-white shadow-sm'
+                ? 'bg-emerald-600 text-white shadow-sm'
                 : 'text-slate-500 hover:text-slate-800'
             }`}
           >
@@ -432,9 +438,9 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
         {activeSubTab === 'orders' && (
           <div className="space-y-6">
             {/* Filter Toolbar */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs space-y-3">
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                <div className="relative flex-grow max-w-md">
+                <div className="relative grow max-w-md">
                   <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                     <Search size={16} />
                   </span>
@@ -484,23 +490,23 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
             </div>
 
             {/* Orders Table */}
-            <div className="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-20 text-slate-400 gap-2">
-                  <RefreshCw className="animate-spin text-emerald-650" size={32} />
+                  <RefreshCw className="animate-spin text-emerald-700" size={32} />
                   <p className="text-sm font-semibold">{t('loading')}</p>
                 </div>
               ) : filteredOrders.length === 0 ? (
                 <div className="text-center py-20 text-slate-400">
                   <p className="text-base font-bold mb-1">{t('noOrders')}</p>
-                  <p className="text-xs text-slate-455">No matches found for active filters.</p>
+                  <p className="text-xs text-slate-400">No matches found for active filters.</p>
                 </div>
               ) : (
                 <>
                   <div className="hidden lg:block overflow-x-auto">
                     <table className="w-full text-left border-collapse text-sm">
                       <thead>
-                        <tr className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-450 uppercase tracking-wider">
+                        <tr className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
                           <th className="p-4">Order ID</th>
                           <th className="p-4">Date</th>
                           <th className="p-4">Customer Name</th>
@@ -528,7 +534,7 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                               {tBiz(order.businessType)}
                             </td>
                             <td className="p-4">
-                              <p className="text-slate-650 text-xs font-semibold line-clamp-2 leading-relaxed" title={order.product}>
+                              <p className="text-slate-600 text-xs font-semibold line-clamp-2 leading-relaxed" title={order.product}>
                                 {order.product}
                               </p>
                             </td>
@@ -538,7 +544,7 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                                 value={order.status}
                                 onChange={(e) => handleStatusChange(order.orderId, e.target.value)}
                                 className={`px-2.5 py-1 rounded-md text-xs font-bold border focus:outline-none cursor-pointer ${
-                                  order.status.toLowerCase() === 'delivered' ? 'bg-emerald-50 text-emerald-700 border-emerald-250' :
+                                  order.status.toLowerCase() === 'delivered' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
                                   order.status.toLowerCase() === 'purchased' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' :
                                   order.status.toLowerCase() === 'confirmed' ? 'bg-sky-50 text-sky-700 border-sky-200' :
                                   'bg-amber-50 text-amber-700 border-amber-200'
@@ -587,7 +593,7 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                           </div>
                           <span className="font-extrabold text-sm text-slate-800">₹{order.totalAmount}</span>
                         </div>
-                        <p className="text-xs text-slate-650 bg-slate-50 p-2 rounded-lg font-semibold">{order.product}</p>
+                        <p className="text-xs text-slate-600 bg-slate-50 p-2 rounded-lg font-semibold">{order.product}</p>
                         <div className="flex justify-between items-center pt-1.5">
                           <select
                             value={order.status}
@@ -621,9 +627,9 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
         {activeSubTab === 'inventory' && (
           <div className="space-y-6 animate-fade-in">
             {/* Inventory Controls */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
-              <div className="flex flex-grow max-w-md gap-2">
-                <div className="relative flex-grow">
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div className="flex grow max-w-md gap-2">
+                <div className="relative grow">
                   <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                     <Search size={16} />
                   </span>
@@ -649,21 +655,14 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                 </select>
               </div>
 
-              <button
-                onClick={resetToDefaultCatalog}
-                className="flex items-center justify-center gap-1.5 px-4 py-2 border border-slate-250 hover:bg-slate-50 text-slate-650 rounded-xl text-sm font-semibold transition-all cursor-pointer shrink-0 self-start md:self-auto"
-              >
-                <RotateCcw size={16} />
-                <span>Reset to Default Rates</span>
-              </button>
             </div>
 
             {/* Sourcing Editor Layout */}
-            <div className="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+            <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-sm">
                   <thead>
-                    <tr className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-450 uppercase tracking-wider">
+                    <tr className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
                       <th className="p-4">Vegetable</th>
                       <th className="p-4">Names (EN / தமிழ்)</th>
                       <th className="p-4 text-center">Category</th>
@@ -683,7 +682,7 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                         <tr key={veg.id} className="hover:bg-slate-50/50 transition-colors">
                           {/* Image */}
                           <td className="p-4">
-                            <div className="w-12 h-12 rounded-xl overflow-hidden border border-slate-200 bg-slate-50 shadow-xs">
+                            <div className="w-12 h-12 rounded-xl overflow-hidden border border-slate-200 bg-slate-50 shadow-sm">
                               <img src={isEditing ? editPhoto : veg.image} alt={veg.nameEn} className="w-full h-full object-cover" />
                             </div>
                           </td>
@@ -696,14 +695,14 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                                   type="text"
                                   value={editNameEn}
                                   onChange={(e) => setEditNameEn(e.target.value)}
-                                  className="w-full px-2 py-1 bg-slate-50 rounded border border-slate-205 text-xs font-bold"
+                                  className="w-full px-2 py-1 bg-slate-50 rounded border border-slate-200 text-xs font-bold"
                                   placeholder="English Name"
                                 />
                                 <input
                                   type="text"
                                   value={editNameTa}
                                   onChange={(e) => setEditNameTa(e.target.value)}
-                                  className="w-full px-2 py-1 bg-slate-50 rounded border border-slate-205 text-xs font-bold text-emerald-800"
+                                  className="w-full px-2 py-1 bg-slate-50 rounded border border-slate-200 text-xs font-bold text-emerald-800"
                                   placeholder="தமிழ் பெயர்"
                                 />
                               </div>
@@ -752,7 +751,7 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                                   type="number"
                                   value={editPrice}
                                   onChange={(e) => setEditPrice(e.target.value)}
-                                  className="pl-6 w-full px-2 py-1.5 bg-slate-50 rounded-xl border border-slate-200 text-sm font-bold focus:outline-emerald-505 focus:bg-white"
+                                  className="pl-6 w-full px-2 py-1.5 bg-slate-50 rounded-xl border border-slate-200 text-sm font-bold focus:outline-emerald-500 focus:bg-white"
                                   placeholder="TapGo Price"
                                 />
                               </div>
@@ -770,8 +769,8 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                               onClick={() => toggleStockStatus(veg.id, veg.outOfStock)}
                               className={`w-full py-1.5 px-2 rounded-xl text-xs font-extrabold transition-all border cursor-pointer ${
                                 veg.outOfStock
-                                  ? 'bg-red-50 text-red-650 border-red-200 hover:bg-red-100'
-                                  : 'bg-emerald-50 text-emerald-755 border-emerald-250 hover:bg-emerald-100'
+                                  ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100'
+                                  : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
                               }`}
                             >
                               {veg.outOfStock 
@@ -783,7 +782,7 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                           {/* Daily Photo - Upload or URL */}
                           <td className="p-4">
                             {isEditing ? (
-                              <div className="space-y-1.5 min-w-[160px]">
+                              <div className="space-y-1.5 min-w-40">
                                 {/* File Upload Button */}
                                 <label className="flex items-center gap-1.5 cursor-pointer bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-bold px-2.5 py-1.5 rounded-lg transition-all">
                                   <Upload size={12} />
@@ -809,11 +808,18 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                                   className="w-full px-2 py-1.5 bg-slate-50 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-400 focus:bg-white font-mono"
                                   placeholder="...or paste image URL"
                                 />
+                                <button
+                                  onClick={() => saveProductRow(veg.id)}
+                                  className="w-full mt-1 text-center bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl py-2 text-xs font-bold"
+                                  title="Save image and row changes"
+                                >
+                                  Save Daily Image URL
+                                </button>
                               </div>
                             ) : (
                               <div className="flex items-center gap-2">
                                 <img src={veg.image} alt="" className="w-8 h-8 rounded-lg object-cover border border-slate-200" />
-                                <span className="text-[10px] text-slate-400 truncate max-w-[80px] font-mono" title={veg.image}>
+                                <span className="text-[10px] text-slate-400 truncate max-w-20 font-mono" title={veg.image}>
                                   {veg.image.startsWith('data:') ? '[Uploaded]' : veg.image.split('/').pop()}
                                 </span>
                               </div>
@@ -824,26 +830,32 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                           {/* Save Actions */}
                           <td className="p-4 text-center">
                             {isEditing ? (
-                              <div className="flex items-center justify-center gap-1.5">
+                              <div className="flex flex-col items-center justify-center gap-2">
                                 <button
                                   onClick={() => saveProductRow(veg.id)}
-                                  className="p-2 bg-emerald-650 hover:bg-emerald-700 text-white rounded-xl cursor-pointer"
+                                  className="w-full px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs transition-all"
                                   title="Save Changes"
                                 >
-                                  <Check size={14} />
+                                  <span className="inline-flex items-center justify-center gap-1">
+                                    <Check size={14} />
+                                    Save Row
+                                  </span>
                                 </button>
                                 <button
                                   onClick={cancelEditing}
-                                  className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl cursor-pointer"
+                                  className="w-full px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold text-xs transition-all"
                                   title="Cancel Edit"
                                 >
-                                  <X size={14} />
+                                  <span className="inline-flex items-center justify-center gap-1">
+                                    <X size={14} />
+                                    Cancel
+                                  </span>
                                 </button>
                               </div>
                             ) : (
                               <button
                                 onClick={() => startEditing(veg)}
-                                className="p-2 bg-slate-100 hover:bg-emerald-55/40 hover:text-emerald-700 text-slate-650 rounded-xl cursor-pointer transition-all mx-auto block border border-slate-200/50"
+                                className="p-2 bg-slate-100 hover:bg-emerald-50/40 hover:text-emerald-700 text-slate-600 rounded-xl cursor-pointer transition-all mx-auto block border border-slate-200/50"
                                 title="Edit Rates / Details"
                               >
                                 <Edit size={14} />
@@ -881,7 +893,7 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                 <div className="col-span-2 text-right font-extrabold text-slate-800">{selectedOrder.orderId}</div>
 
                 <div className="text-slate-400 font-semibold">Date / Time</div>
-                <div className="col-span-2 text-right text-slate-850 font-semibold">{selectedOrder.date}</div>
+                <div className="col-span-2 text-right text-slate-900 font-semibold">{selectedOrder.date}</div>
 
                 <div className="text-slate-400 font-semibold">Name / Business</div>
                 <div className="col-span-2 text-right font-bold text-slate-800">{selectedOrder.name}</div>
@@ -892,7 +904,7 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                 </div>
 
                 <div className="text-slate-400 font-semibold">Business Category</div>
-                <div className="col-span-2 text-right text-slate-850 font-semibold">
+                <div className="col-span-2 text-right text-slate-900 font-semibold">
                   {tBiz(selectedOrder.businessType)}
                 </div>
 
@@ -947,7 +959,7 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                 href={`https://wa.me/91${selectedOrder.phone}?text=Hi%20${encodeURIComponent(selectedOrder.name)},%20this%20is%20TapGo%20regarding%20your%20vegetable%20order%2520${selectedOrder.orderId}.`}
                 target="_blank"
                 rel="noreferrer"
-                className="flex-grow flex items-center justify-center gap-1.5 bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all cursor-pointer"
+                className="grow flex items-center justify-center gap-1.5 bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all cursor-pointer"
               >
                 <MessageSquare size={16} />
                 <span>WhatsApp Customer</span>

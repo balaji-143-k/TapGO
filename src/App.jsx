@@ -171,7 +171,7 @@ function Storefront({ cart, onAddToCart, onUpdateQuantity, onOpenCart, onNavigat
       <main className="px-3 pt-3 space-y-4">
 
         {/* Hero Banner */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-emerald-700 via-emerald-800 to-emerald-950 text-white rounded-2xl p-5 shadow-lg">
+        <section className="relative overflow-hidden bg-linear-to-br from-emerald-700 via-emerald-800 to-emerald-950 text-white rounded-2xl p-5 shadow-lg">
           <div className="absolute -top-4 -right-4 w-28 h-28 bg-white/5 rounded-full blur-2xl" />
           <div className="absolute bottom-0 right-0 w-20 h-20 bg-emerald-500/20 rounded-full blur-xl" />
           <div className="relative z-10">
@@ -276,7 +276,16 @@ function MainApp() {
   };
 
   const handleAddToCart = (product) => {
-    setCart(prev => [...prev, { ...product, quantity: product.minOrder }]);
+    setCart(prev => {
+      const existing = prev.find(item => item.id === product.id);
+      if (existing) {
+        return prev.map(item => item.id === product.id ? {
+          ...item,
+          quantity: item.quantity + product.minOrder
+        } : item);
+      }
+      return [...prev, { ...product, quantity: product.minOrder }];
+    });
   };
 
   const handleUpdateQuantity = (productId, nextQty) => {

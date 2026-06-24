@@ -36,7 +36,7 @@ export default function BusinessCardModal({ isOpen, onClose }) {
           </div>
           <button 
             onClick={onClose} 
-            className="p-1 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-slate-650 transition-colors cursor-pointer"
+            className="p-1 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
             aria-label="Close modal"
           >
             <X size={22} />
@@ -63,7 +63,7 @@ export default function BusinessCardModal({ isOpen, onClose }) {
 
           {/* QR Code Sourcing */}
           <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100 flex flex-col sm:flex-row items-center gap-6">
-            <div className="bg-white p-3 rounded-2xl shadow-xs border border-slate-200/50 shrink-0">
+            <div className="bg-white p-3 rounded-2xl shadow-sm border border-slate-200/50 shrink-0">
               <img 
                 src={qrCodeUrl} 
                 alt="Order QR Code" 
@@ -72,7 +72,7 @@ export default function BusinessCardModal({ isOpen, onClose }) {
             </div>
             
             <div className="space-y-2 text-center sm:text-left">
-              <h4 className="font-extrabold text-slate-850 text-base">
+              <h4 className="font-extrabold text-slate-900 text-base">
                 {lang === 'en' ? 'Scan to Order Online' : 'ஆர்டர் செய்ய ஸ்கேன் செய்யவும்'}
               </h4>
               <p className="text-slate-500 text-xs leading-relaxed font-medium">
@@ -81,7 +81,7 @@ export default function BusinessCardModal({ isOpen, onClose }) {
                   : 'உங்கள் வாடிக்கையாளர்களிடம் (ஹோட்டல், டீக்கடை, மெஸ்) இந்த QR குறியீட்டைக் காட்டுங்கள். அவர்கள் தங்கள் கேமரா மூலம் ஸ்கேன் செய்து உடனடியாக ஆர்டர் செய்யலாம்!'}
               </p>
               
-              <div className="pt-2 text-xs font-bold text-emerald-650 font-mono select-all">
+              <div className="pt-2 text-xs font-bold text-emerald-700 font-mono select-all">
                 {currentUrl}
               </div>
             </div>
@@ -93,7 +93,7 @@ export default function BusinessCardModal({ isOpen, onClose }) {
         <div className="flex gap-3 pt-3 border-t border-slate-100">
           <button
             onClick={handlePrint}
-            className="flex-grow flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition-all duration-200 transform active:scale-95 shadow-md shadow-emerald-250 cursor-pointer"
+            className="grow flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition-all duration-200 transform active:scale-95 shadow-md shadow-emerald-200 cursor-pointer"
           >
             <Printer size={16} />
             <span>{lang === 'en' ? 'Print Card & QR' : 'கார்டு அச்சிடுக'}</span>

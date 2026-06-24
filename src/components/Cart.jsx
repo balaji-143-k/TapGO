@@ -95,7 +95,7 @@ export default function Cart({
       {/* Cart Panel */}
       <div className="relative w-full max-w-lg bg-white h-full shadow-2xl flex flex-col z-10 transition-transform duration-300">
         {/* Header */}
-        <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-emerald-650 text-white">
+        <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-emerald-600 text-white">
           <div className="flex items-center gap-2">
             <ShoppingBag size={20} />
             <h2 className="text-lg font-bold font-outfit">{t('cartTitle')}</h2>
@@ -113,7 +113,7 @@ export default function Cart({
         </div>
 
         {/* Content Area */}
-        <div className="flex-grow overflow-y-auto p-4 space-y-6">
+        <div className="grow overflow-y-auto p-4 space-y-6">
           {cartItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 text-slate-400">
               <ShoppingBag size={48} className="stroke-1 mb-3 text-slate-300" />
@@ -128,7 +128,7 @@ export default function Cart({
 
               {/* Items List */}
               <div className="space-y-3">
-                <div className="flex justify-between items-center text-xs font-bold text-slate-450 uppercase tracking-wider">
+                <div className="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-wider">
                   <span>Selected Vegetables</span>
                   <button 
                     onClick={onClearCart} 
@@ -139,7 +139,7 @@ export default function Cart({
                   </button>
                 </div>
                 
-                <div className="divide-y divide-slate-100 bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-xs">
+                <div className="divide-y divide-slate-100 bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm">
                   {cartItems.map((item) => {
                     const itemName = lang === 'en' ? item.nameEn : item.nameTa;
                     const itemUnit = lang === 'en' ? item.unit : (item.unit === 'kg' ? 'கிலோ' : item.unit === 'kattu' ? 'கட்டு' : item.unit === 'piece' ? 'பீஸ்' : 'பாக்கெட்');
@@ -150,7 +150,7 @@ export default function Cart({
                           <img 
                             src={item.image} 
                             alt={itemName} 
-                            className="w-12 h-12 rounded-xl object-cover bg-slate-150"
+                            className="w-12 h-12 rounded-xl object-cover bg-slate-200"
                           />
                           <div>
                             <h4 className="font-bold text-sm text-slate-800 line-clamp-1">{itemName}</h4>
@@ -194,13 +194,13 @@ export default function Cart({
 
               {/* Checkout Form */}
               <form onSubmit={handleSubmit} className="space-y-4 pt-4 border-t border-slate-100">
-                <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider text-slate-450">
+                <h3 className="font-bold text-slate-800 text-sm uppercase tracking-wider text-slate-500">
                   {t('checkoutTitle')}
                 </h3>
                 
                 {/* Name */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-650 mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-600 mb-1.5">
                     {t('customerName')} *
                   </label>
                   <input
@@ -216,11 +216,11 @@ export default function Cart({
 
                 {/* Phone */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-650 mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-600 mb-1.5">
                     {t('phone')} *
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-450 text-sm font-semibold">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-semibold">
                       +91
                     </span>
                     <input
@@ -238,7 +238,7 @@ export default function Cart({
 
                 {/* Business Type */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-650 mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-600 mb-1.5">
                     {t('businessType')} *
                   </label>
                   <select
@@ -257,7 +257,7 @@ export default function Cart({
 
                 {/* Delivery instructions */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-650 mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-600 mb-1.5">
                     {t('deliveryNote')}
                   </label>
                   <textarea
@@ -284,7 +284,7 @@ export default function Cart({
               </div>
               <div className="flex justify-between items-center text-xs">
                 <span>{t('deliveryTime')}</span>
-                <span className="text-emerald-650 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">
+                <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">
                   {t('deliveryTimeVal')}
                 </span>
               </div>
@@ -292,7 +292,7 @@ export default function Cart({
                 <span>{t('deliveryCharge')}</span>
                 <span className="text-emerald-600 font-bold">{t('free')}</span>
               </div>
-              <div className="flex justify-between text-base font-extrabold text-slate-800 pt-2 border-t border-dashed border-slate-250">
+              <div className="flex justify-between text-base font-extrabold text-slate-800 pt-2 border-t border-dashed border-slate-200">
                 <span>{t('grandTotal')}</span>
                 <span className="text-emerald-700">₹{grandTotal}</span>
               </div>

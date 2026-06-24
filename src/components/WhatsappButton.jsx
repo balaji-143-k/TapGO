@@ -17,7 +17,7 @@ export default function WhatsappButton({ phoneNumber = '919626815733' }) {
     <button
       onClick={handleWhatsappClick}
       aria-label="Contact support on WhatsApp"
-      className="fixed bottom-6 right-6 z-40 flex items-center gap-2 bg-[#25D366] hover:bg-[#20ba5a] text-white font-semibold py-3 px-4 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 group focus:outline-none focus:ring-4 focus:ring-emerald-300 cursor-pointer"
+      className="fixed bottom-6 left-6 z-40 flex items-center gap-2 bg-[#25D366] hover:bg-[#20ba5a] text-white font-semibold py-3 px-4 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 group focus:outline-none focus:ring-4 focus:ring-emerald-300 cursor-pointer"
     >
       {/* WhatsApp Custom SVG Icon */}
       <svg

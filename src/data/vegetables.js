@@ -1,0 +1,277 @@
+export const categories = [
+  { id: 'all', en: 'All Veggies', ta: 'அனைத்தும்' },
+  { id: 'daily', en: 'Daily Veggies', ta: 'தினசரி காய்கறிகள்' },
+  { id: 'greens', en: 'Leafy Greens', ta: 'கீரை வகைகள்' },
+  { id: 'herbs', en: 'Herbs & Spices', ta: 'மூலிகைகள் & மசாலா' },
+  { id: 'exotic', en: 'Exotic Veggies', ta: 'அரிய காய்கறிகள்' }
+];
+
+export const vegetables = [
+  // Daily Veggies
+  {
+    id: 'onion',
+    nameEn: 'Onion (Bellary)',
+    nameTa: 'வெங்காயம் (பெல்லாரி)',
+    category: 'daily',
+    price: 35,
+    marketPrice: 42,
+    unit: 'kg',
+    minOrder: 1,
+    image: 'https://images.unsplash.com/photo-1508747703725-719777637510?auto=format&fit=crop&w=300&q=80',
+    descriptionEn: 'Fresh farm onions, ideal for daily cooking.',
+    descriptionTa: 'தினசரி சமையலுக்கு ஏற்ற புதிய வெங்காயம்.'
+  },
+  {
+    id: 'onion_small',
+    nameEn: 'Small Onion (Shallots)',
+    nameTa: 'சின்ன வெங்காயம்',
+    category: 'daily',
+    price: 65,
+    marketPrice: 78,
+    unit: 'kg',
+    minOrder: 0.5,
+    image: 'https://images.unsplash.com/photo-1620574387735-3624d75b2dbc?auto=format&fit=crop&w=300&q=80',
+    descriptionEn: 'High-quality small onions, rich flavor for Sambar.',
+    descriptionTa: 'சாம்பாருக்கு சுவையூட்டும் தரமான சின்ன வெங்காயம்.'
+  },
+  {
+    id: 'tomato',
+    nameEn: 'Tomato (Local)',
+    nameTa: 'தக்காளி (நாட்டு தக்காளி)',
+    category: 'daily',
+    price: 28,
+    marketPrice: 36,
+    unit: 'kg',
+    minOrder: 1,
+    image: 'https://images.unsplash.com/photo-1595855759920-86582396756a?auto=format&fit=crop&w=300&q=80',
+    descriptionEn: 'Juicy, ripe red tomatoes harvested fresh.',
+    descriptionTa: 'புதிதாக அறுவடை செய்யப்பட்ட பழுத்த தக்காளி.'
+  },
+  {
+    id: 'potato',
+    nameEn: 'Potato (Indore)',
+    nameTa: 'உруளைக்கிழங்கு',
+    category: 'daily',
+    price: 32,
+    marketPrice: 40,
+    unit: 'kg',
+    minOrder: 1,
+    image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=300&q=80',
+    descriptionEn: 'High-quality Potatoes, firm texture and long shelf life.',
+    descriptionTa: 'சிறந்த உருளைக்கிழங்கு, சமையலுக்கு உகந்தது.'
+  },
+  {
+    id: 'carrot',
+    nameEn: 'Carrot (Ooty)',
+    nameTa: 'கேரட் (ஊட்டி)',
+    category: 'daily',
+    price: 45,
+    marketPrice: 58,
+    unit: 'kg',
+    minOrder: 0.5,
+    image: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&w=300&q=80',
+    descriptionEn: 'Sweet and crunchy premium Ooty carrots.',
+    descriptionTa: 'இனிப்பான மற்றும் மொறுமொறுப்பான ஊட்டி கேரட்.'
+  },
+  {
+    id: 'beans',
+    nameEn: 'Beans',
+    nameTa: 'பீன்ஸ்',
+    category: 'daily',
+    price: 50,
+    marketPrice: 65,
+    unit: 'kg',
+    minOrder: 0.5,
+    image: 'https://images.unsplash.com/photo-1567375695330-70f2f434d107?auto=format&fit=crop&w=300&q=80',
+    descriptionEn: 'Tender green beans packed with nutrients.',
+    descriptionTa: 'சத்துக்கள் நிறைந்த பசுமையான பீன்ஸ்.'
+  },
+  {
+    id: 'brinjal',
+    nameEn: 'Brinjal (Varipatri)',
+    nameTa: 'கத்தரிக்காய்',
+    category: 'daily',
+    price: 30,
+    marketPrice: 38,
+    unit: 'kg',
+    minOrder: 0.5,
+    image: 'https://images.unsplash.com/photo-1629115916386-79455e3db942?auto=format&fit=crop&w=300&q=80',
+    descriptionEn: 'Shiny, tender green-striped local brinjal.',
+    descriptionTa: 'பளபளப்பான, சுவையான நாட்டு கத்தரிக்காய்.'
+  },
+  {
+    id: 'ladies_finger',
+    nameEn: 'Ladies Finger (Okra)',
+    nameTa: 'வெண்டைக்காய்',
+    category: 'daily',
+    price: 35,
+    marketPrice: 45,
+    unit: 'kg',
+    minOrder: 0.5,
+    image: 'https://images.unsplash.com/photo-1625938146369-adc83368bda7?auto=format&fit=crop&w=300&q=80',
+    descriptionEn: 'Fresh, slender, and tender lady finger.',
+    descriptionTa: 'புதிய, பிஞ்சு வெண்டைக்காய்.'
+  },
+
+  // Leafy Greens
+  {
+    id: 'spinach_palak',
+    nameEn: 'Spinach (Palak Keerai)',
+    nameTa: 'பாலக் கீரை',
+    category: 'greens',
+    price: 15,
+    marketPrice: 20,
+    unit: 'kattu',
+    minOrder: 1,
+    image: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=300&q=80',
+    descriptionEn: 'Nutritious green spinach bundles.',
+    descriptionTa: 'சத்துக்கள் நிறைந்த புதிய பாலக் கீரை கட்டு.'
+  },
+  {
+    id: 'arakeerai',
+    nameEn: 'Ara Keerai',
+    nameTa: 'அரைக்கீரை',
+    category: 'greens',
+    price: 15,
+    marketPrice: 20,
+    unit: 'kattu',
+    minOrder: 1,
+    image: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=300&q=80',
+    descriptionEn: 'Traditional Tamil Nadu green leafy vegetable.',
+    descriptionTa: 'பாரம்பரிய சத்துமிக்க அரைக்கீரை கட்டு.'
+  },
+  {
+    id: 'coriander',
+    nameEn: 'Coriander Leaves',
+    nameTa: 'கொத்தமல்லி தழை',
+    category: 'greens',
+    price: 12,
+    marketPrice: 18,
+    unit: 'kattu',
+    minOrder: 1,
+    image: 'https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?auto=format&fit=crop&w=300&q=80',
+    descriptionEn: 'Aromatic fresh coriander leaves for garnishing.',
+    descriptionTa: 'வாசனை மிகுந்த புதிய கொத்தமல்லி கட்டு.'
+  },
+  {
+    id: 'mint',
+    nameEn: 'Mint Leaves (Pudhina)',
+    nameTa: 'புதினா',
+    category: 'greens',
+    price: 12,
+    marketPrice: 18,
+    unit: 'kattu',
+    minOrder: 1,
+    image: 'https://images.unsplash.com/photo-1536147116438-62679a5e01f2?auto=format&fit=crop&w=300&q=80',
+    descriptionEn: 'Fresh, cooling mint leaves.',
+    descriptionTa: 'புதிய, வாசனையான புதினா கட்டு.'
+  },
+
+  // Herbs & Spices
+  {
+    id: 'ginger',
+    nameEn: 'Ginger (Inji)',
+    nameTa: 'இஞ்சி',
+    category: 'herbs',
+    price: 120,
+    marketPrice: 150,
+    unit: 'kg',
+    minOrder: 0.25,
+    image: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=300&q=80',
+    descriptionEn: 'Strong flavored ginger roots.',
+    descriptionTa: 'காரசாரமான, மருத்துவ குணம் கொண்ட இஞ்சி.'
+  },
+  {
+    id: 'garlic',
+    nameEn: 'Garlic (Poondu)',
+    nameTa: 'பூண்டு',
+    category: 'herbs',
+    price: 160,
+    marketPrice: 200,
+    unit: 'kg',
+    minOrder: 0.25,
+    image: 'https://images.unsplash.com/photo-1540120059648-526c302228e5?auto=format&fit=crop&w=300&q=80',
+    descriptionEn: 'Aromatic garlic cloves from local farms.',
+    descriptionTa: 'வாசனை மற்றும் மருத்துவ குணம் நிறைந்த பூண்டு.'
+  },
+  {
+    id: 'green_chilli',
+    nameEn: 'Green Chilli',
+    nameTa: 'பச்சை மிளகாய்',
+    category: 'herbs',
+    price: 45,
+    marketPrice: 55,
+    unit: 'kg',
+    minOrder: 0.25,
+    image: 'https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?auto=format&fit=crop&w=300&q=80',
+    descriptionEn: 'Spicy green chillies, freshly plucked.',
+    descriptionTa: 'காரசாரமான புதிய பச்சை மிளகாய்.'
+  },
+  {
+    id: 'lemon',
+    nameEn: 'Lemon (Elumichai)',
+    nameTa: 'எலுமிச்சம்பழம்',
+    category: 'herbs',
+    price: 3,
+    marketPrice: 5,
+    unit: 'piece',
+    minOrder: 5,
+    image: 'https://images.unsplash.com/photo-1590502593747-42a996133562?auto=format&fit=crop&w=300&q=80',
+    descriptionEn: 'Juicy, sour yellow lemons.',
+    descriptionTa: 'சாறு நிறைந்த மஞ்சள் எலுமிச்சம்பழம்.'
+  },
+
+  // Exotic Veggies
+  {
+    id: 'capsicum_green',
+    nameEn: 'Capsicum (Green)',
+    nameTa: 'குடைமிளகாய் (பச்சை)',
+    category: 'exotic',
+    price: 60,
+    marketPrice: 75,
+    unit: 'kg',
+    minOrder: 0.5,
+    image: 'https://images.unsplash.com/photo-1563506733124-80770128e0ff?auto=format&fit=crop&w=300&q=80',
+    descriptionEn: 'Crunchy green capsicum for salads and stir-fries.',
+    descriptionTa: 'சாலடுகள் மற்றும் பொரியலுக்கு உகந்த குடைமிளகாய்.'
+  },
+  {
+    id: 'cauliflower',
+    nameEn: 'Cauliflower',
+    nameTa: 'கோபி / காலிஃபிளவர்',
+    category: 'exotic',
+    price: 30,
+    marketPrice: 40,
+    unit: 'piece',
+    minOrder: 1,
+    image: 'https://images.unsplash.com/photo-1568584711075-3d021a7c3ec3?auto=format&fit=crop&w=300&q=80',
+    descriptionEn: 'Fresh white cauliflower heads.',
+    descriptionTa: 'புதிய, பூ போன்ற காலிஃபிளவர்.'
+  },
+  {
+    id: 'cabbage',
+    nameEn: 'Cabbage',
+    nameTa: 'முட்டைக்கோஸ்',
+    category: 'exotic',
+    price: 25,
+    marketPrice: 35,
+    unit: 'kg',
+    minOrder: 1,
+    image: 'https://images.unsplash.com/photo-1581044717144-8d4ca7cf4db3?auto=format&fit=crop&w=300&q=80',
+    descriptionEn: 'Crisp green cabbage, packed tight.',
+    descriptionTa: 'அடர்த்தியான, புதிய முட்டைக்கோஸ்.'
+  },
+  {
+    id: 'mushroom',
+    nameEn: 'Button Mushroom',
+    nameTa: 'காளான் (பட்டன் காளான்)',
+    category: 'exotic',
+    price: 45,
+    marketPrice: 55,
+    unit: 'pack',
+    minOrder: 1,
+    image: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=300&q=80',
+    descriptionEn: 'Freshly packed button mushrooms (approx 200g per pack).',
+    descriptionTa: 'புதிய பட்டன் காளான் பாக்கெட் (200 கிராம்).'
+  }
+];

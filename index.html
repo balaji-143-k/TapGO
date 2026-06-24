@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    
+    <!-- PWA & Mobile App Meta Tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#16a34a" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="TapGo" />
+    <meta name="application-name" content="TapGo" />
+    <meta name="msapplication-TileColor" content="#16a34a" />
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/icon-512.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
+
+    <!-- SEO -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <title>TapGo — Order Fresh Vegetables Daily</title>
+    <meta name="description" content="TapGo — Order fresh vegetables at wholesale market prices. Next-day delivery for hotels, tea shops, messes, and restaurants. Tamil & English supported." />
+    <meta name="keywords" content="vegetable order app, TapGo, காய்கறி ஆர்டர், fresh vegetables, wholesale vegetables, next day delivery" />
+    <meta property="og:title" content="TapGo — Fresh Vegetables Delivered" />
+    <meta property="og:description" content="Order fresh vegetables at wholesale prices. Fast, simple ordering for bulk buyers." />
+    <meta property="og:type" content="website" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+      /* Prevent pull-to-refresh jank on mobile */
+      html { overscroll-behavior: none; }
+      /* Remove tap highlight on mobile */
+      * { -webkit-tap-highlight-color: transparent; }
+      /* Safe area support for notched phones */
+      body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

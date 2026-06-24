@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "postinstall": "npx cap sync",
+    "postinstall": "sh -c '\n  if [ \"$VERCEL\" = \"1\" ]; then\n    echo \"Skipping postinstall on Vercel\"\n  else\n    npx cap sync\n  fi\n'",
     "cap:init": "npx cap init TapGo com.tapgo.app --web-dir=dist",
     "cap:add-android": "npx cap add android",
     "cap:add-ios": "npx cap add ios",

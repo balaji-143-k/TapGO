@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from './LanguageContext';
+import { stripName } from '../utils/nameUtils';
 import { X, Trash2, ShoppingBag, ArrowRight, CheckCircle, Smartphone } from 'lucide-react';
 
 export default function Cart({ 
@@ -63,7 +64,8 @@ export default function Cart({
 
     // Format products text list for Sheets
     const productSummary = cartItems.map(item => {
-      const pName = lang === 'en' ? item.nameEn : item.nameTa;
+      const pNameRaw = lang === 'en' ? item.nameEn : item.nameTa;
+      const pName = stripName(pNameRaw);
       return `${pName} (${item.quantity}${item.unit})`;
     }).join(', ');
 
@@ -141,7 +143,8 @@ export default function Cart({
                 
                 <div className="divide-y divide-slate-100 bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm">
                   {cartItems.map((item) => {
-                    const itemName = lang === 'en' ? item.nameEn : item.nameTa;
+                    const itemNameRaw = lang === 'en' ? item.nameEn : item.nameTa;
+                    const itemName = stripName(itemNameRaw);
                     const itemUnit = lang === 'en' ? item.unit : (item.unit === 'kg' ? 'கிலோ' : item.unit === 'kattu' ? 'கட்டு' : item.unit === 'piece' ? 'பீஸ்' : 'பாக்கெட்');
                     
                     return (

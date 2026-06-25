@@ -26,6 +26,7 @@ import {
   X,
   SlidersHorizontal
 } from 'lucide-react';
+import { getOffers } from './services/googleSheets';
 
 const BUSINESS_PHONE = '9626815733';
 
@@ -93,10 +94,18 @@ function BottomNav({ cart, onOpenCart, onOpenCardModal, toggleLanguage, lang, on
 }
 
 /* ─── Storefront ────────────────────────────────────────────────── */
-function Storefront({ cart, onAddToCart, onUpdateQuantity, onOpenCart, onNavigate, catalog, onOpenCardModal }) {
+function Storefront({ cart, onAddToCart, onUpdateQuantity, onOpenCart, onNavigate, catalog, onOpenCardModal, onUpdateCatalog }) {
   const { lang, toggleLanguage, t } = useLanguage();
+  const [offerText, setOfferText] = useState('');
+
+  useEffect(() => {
+    const offers = getOffers();
+    setOfferText(lang === 'en' ? (offers.en || '') : (offers.ta || ''));
+  }, [lang]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState('daily');
+  const [newVegNameEn, setNewVegNameEn] = useState('');
+  const [newVegNameTa, setNewVegNameTa] = useState('');
   const [showSearch, setShowSearch] = useState(false);
 
   const filteredVegetables = catalog.filter(item => {
@@ -115,6 +124,7 @@ function Storefront({ cart, onAddToCart, onUpdateQuantity, onOpenCart, onNavigat
         <div className="flex items-center justify-between px-4 h-14">
           <Logo className="h-9" />
           <div className="flex items-center gap-2">
+            <WhatsappButton phoneNumber={BUSINESS_PHONE} className="hidden sm:flex" />
             <button
               onClick={() => setShowSearch(v => !v)}
               className="p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition-colors active:scale-90"
@@ -181,6 +191,11 @@ function Storefront({ cart, onAddToCart, onUpdateQuantity, onOpenCart, onNavigat
             </span>
             <h1 className="text-lg font-black leading-tight mb-1">{t('tagline')}</h1>
             <p className="text-xs text-emerald-200/90 font-medium mb-4">{t('subTagline')}</p>
+            {offerText && (
+              <div className="mb-3 text-sm font-bold bg-white/10 px-3 py-2 rounded-xl inline-block text-emerald-200">
+                {offerText}
+              </div>
+            )}
             <div className="grid grid-cols-3 gap-2 text-[10px] font-bold text-emerald-200">
               <div className="flex items-center gap-1 bg-white/10 px-2 py-1.5 rounded-xl">
                 <Truck size={12} className="text-emerald-400 shrink-0" /><span>Next-Day</span>
@@ -214,9 +229,60 @@ function Storefront({ cart, onAddToCart, onUpdateQuantity, onOpenCart, onNavigat
         </section>
 
         {/* Catalog Header */}
-        <div className="flex justify-between items-center px-1">
-          <h2 className="text-sm font-black text-slate-800 uppercase tracking-wide">{t('categoriesLabel')}</h2>
-          <span className="text-xs text-slate-400 font-semibold">{filteredVegetables.length} items</span>
+        <div className="flex flex-col gap-3 px-1">
+          <div className="flex justify-between items-center">
+            <h2 className="text-sm font-black text-slate-800 uppercase tracking-wide">{t('categoriesLabel')}</h2>
+            <span className="text-xs text-slate-400 font-semibold">{filteredVegetables.length} items</span>
+          </div>
+          <div className="flex flex-col gap-2 bg-white rounded-xl border border-slate-200 px-3 py-2">
+            <input
+              type="text"
+              placeholder={lang === 'en' ? 'English name' : 'ஆங்கில பெயர்'}
+              value={newVegNameEn}
+              onChange={e => {
+                const value = e.target.value;
+                setNewVegNameEn(value);
+                setNewVegNameTa(value);
+              }}
+              className="text-sm pl-2 pr-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-200"
+            />
+            <input
+              type="text"
+              placeholder={lang === 'en' ? 'Tamil name' : 'தமிழ் பெயர்'}
+              value={newVegNameTa}
+              onChange={e => setNewVegNameTa(e.target.value)}
+              className="text-sm pl-2 pr-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-200 font-tamil"
+            />
+            <button
+              onClick={() => {
+                if (!newVegNameEn.trim() || !newVegNameTa.trim()) return;
+                const idBase = newVegNameEn.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+                const newId = `custom_${idBase}_${Date.now()}`;
+                const categoryToUse = selectedCategory === 'all' ? 'daily' : selectedCategory;
+                const newItem = {
+                  id: newId,
+                  nameEn: newVegNameEn.trim(),
+                  nameTa: newVegNameTa.trim(),
+                  category: categoryToUse,
+                  price: 0,
+                  marketPrice: 0,
+                  unit: 'kg',
+                  minOrder: 1,
+                  stock: 100,
+                  outOfStock: false,
+                  image: '',
+                  descriptionEn: '',
+                  descriptionTa: ''
+                };
+                onUpdateCatalog([...catalog, newItem]);
+                setNewVegNameEn('');
+                setNewVegNameTa('');
+              }}
+              className="px-3 py-1.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg whitespace-nowrap transition-colors"
+            >
+              {lang === 'en' ? 'Add Vegetable' : 'சேர்க்கு'}
+            </button>
+          </div>
         </div>
 
         {/* Product Grid */}
@@ -236,6 +302,10 @@ function Storefront({ cart, onAddToCart, onUpdateQuantity, onOpenCart, onNavigat
                   cartItem={cartItem}
                   onAddToCart={onAddToCart}
                   onUpdateQuantity={onUpdateQuantity}
+                  onUpdateProduct={(updated) => {
+                    const updatedCatalog = catalog.map(c => c.id === updated.id ? { ...c, ...updated } : c);
+                    onUpdateCatalog(updatedCatalog);
+                  }}
                 />
               );
             })}
@@ -265,9 +335,15 @@ function MainApp() {
   const [isCardModalOpen, setIsCardModalOpen] = useState(false);
 
   // Catalog State with LocalStorage sync
+  const defaultCatalog = vegetables.map(item => ({
+    stock: item.stock ?? 100,
+    outOfStock: item.outOfStock ?? false,
+    ...item
+  }));
+
   const [catalog, setCatalog] = useState(() => {
     const saved = localStorage.getItem('tapgo_catalog_db');
-    return saved ? JSON.parse(saved) : vegetables;
+    return saved ? JSON.parse(saved) : defaultCatalog;
   });
 
   const handleUpdateCatalog = (newCatalog) => {
@@ -326,6 +402,7 @@ function MainApp() {
           onNavigate={setCurrentTab}
           catalog={catalog}
           onOpenCardModal={() => setIsCardModalOpen(true)}
+          onUpdateCatalog={handleUpdateCatalog}
         />
       )}
 
@@ -357,11 +434,6 @@ function MainApp() {
 
       {/* Business Card Modal */}
       <BusinessCardModal isOpen={isCardModalOpen} onClose={() => setIsCardModalOpen(false)} />
-
-      {/* WhatsApp Floating Button */}
-      {currentTab !== 'admin' && (
-        <WhatsappButton phoneNumber={BUSINESS_PHONE} />
-      )}
 
       {/* PWA Install Prompt */}
       <InstallPrompt />

@@ -84,6 +84,8 @@
 const LOCAL_ORDERS_KEY = 'tapgo_orders_db';
 const SHEETS_URL_KEY = 'tapgo_google_sheets_url';
 const ADMIN_PASSWORD_KEY = 'tapgo_admin_password';
+const OFFER_EN_KEY = 'tapgo_offer_en';
+const OFFER_TA_KEY = 'tapgo_offer_ta';
 
 // Default Admin password is 'tapgo123'
 if (!localStorage.getItem(ADMIN_PASSWORD_KEY)) {
@@ -228,6 +230,15 @@ export const saveNewOrder = async (order) => {
   localOrders.unshift(order); // Add to beginning
   localStorage.setItem(LOCAL_ORDERS_KEY, JSON.stringify(localOrders));
 
+  // Notify other parts of the app (admin panel) that orders changed
+  try {
+    if (typeof window !== 'undefined' && window.dispatchEvent) {
+      window.dispatchEvent(new CustomEvent('tapgo:orders-updated', { detail: { order } }));
+    }
+  } catch (e) {
+    // ignore
+  }
+
   // Sync to Google Sheets if URL exists
   const url = getGoogleSheetsUrl();
   if (url) {
@@ -243,6 +254,11 @@ export const saveNewOrder = async (order) => {
         body: JSON.stringify(order)
       });
       const result = await response.json();
+      try {
+        if (typeof window !== 'undefined' && window.dispatchEvent) {
+          window.dispatchEvent(new CustomEvent('tapgo:orders-updated', { detail: { order, result } }));
+        }
+      } catch (e) {}
       return { success: true, localOnly: false, result };
     } catch (e) {
       console.error("Failed to send order to Google Sheets:", e);
@@ -275,6 +291,11 @@ export const updateOrderStatus = async (orderId, newStatus) => {
 
   if (updated) {
     localStorage.setItem(LOCAL_ORDERS_KEY, JSON.stringify(localOrders));
+    try {
+      if (typeof window !== 'undefined' && window.dispatchEvent) {
+        window.dispatchEvent(new CustomEvent('tapgo:orders-updated', { detail: { orderId, newStatus } }));
+      }
+    } catch (e) {}
   }
 
   // Update in Google Sheets
@@ -299,6 +320,19 @@ export const updateOrderStatus = async (orderId, newStatus) => {
   }
 
   return updated;
+};
+
+// Offer helpers
+export const getOffers = () => {
+  return {
+    en: localStorage.getItem(OFFER_EN_KEY) || '',
+    ta: localStorage.getItem(OFFER_TA_KEY) || ''
+  };
+};
+
+export const setOffers = (offers) => {
+  if (offers.en !== undefined) localStorage.setItem(OFFER_EN_KEY, offers.en || '');
+  if (offers.ta !== undefined) localStorage.setItem(OFFER_TA_KEY, offers.ta || '');
 };
 
 // Verify Admin Password

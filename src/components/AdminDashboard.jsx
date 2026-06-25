@@ -5,7 +5,9 @@ import {
   getGoogleSheetsUrl, 
   setGoogleSheetsUrl,
   verifyAdminPassword,
-  updateAdminPassword
+  updateAdminPassword,
+  getOffers,
+  setOffers
 } from '../services/googleSheets';
 import { useLanguage } from './LanguageContext';
 import { 
@@ -18,7 +20,7 @@ import {
   Lock, 
   Phone, 
   MessageSquare, 
-  DollarSign, 
+  IndianRupee, 
   ShoppingBag, 
   Clock, 
   CheckCircle,
@@ -64,16 +66,35 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
   // Filter states (Inventory)
   const [vegSearch, setVegSearch] = useState('');
   const [vegCategoryFilter, setVegCategoryFilter] = useState('all');
+  const [showLowStockOnly, setShowLowStockOnly] = useState(false);
+  const [highlightSavings, setHighlightSavings] = useState(false);
   
   // Inline editing states for inventory
   const [editingRowId, setEditingRowId] = useState(null);
   const [editPrice, setEditPrice] = useState('');
   const [editMarketPrice, setEditMarketPrice] = useState('');
+  const [editStock, setEditStock] = useState('');
   const [editPhoto, setEditPhoto] = useState('');
   const [editNameEn, setEditNameEn] = useState('');
   const [editNameTa, setEditNameTa] = useState('');
 
   const [statusMessage, setStatusMessage] = useState('');
+  const [showAddForm, setShowAddForm] = useState(false);
+
+  // Add Veg form state
+  const [newVegNameEn, setNewVegNameEn] = useState('');
+  const [newVegNameTa, setNewVegNameTa] = useState('');
+  const [newVegCategory, setNewVegCategory] = useState('daily');
+  const [newVegPrice, setNewVegPrice] = useState('');
+  const [newVegMarketPrice, setNewVegMarketPrice] = useState('');
+  const [newVegStock, setNewVegStock] = useState('0');
+  const [newVegUnit, setNewVegUnit] = useState('kg');
+  const [newVegMinOrder, setNewVegMinOrder] = useState('1');
+  const [newVegImage, setNewVegImage] = useState('');
+
+  // Offer fields
+  const [offerEn, setOfferEn] = useState('');
+  const [offerTa, setOfferTa] = useState('');
 
   // Load configuration on mount
   useEffect(() => {
@@ -83,6 +104,30 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
       setIsAuthenticated(true);
       loadOrders();
     }
+    // load offers
+    const offers = getOffers();
+    setOfferEn(offers.en || '');
+    setOfferTa(offers.ta || '');
+
+    // listen to order updates from other parts (saveNewOrder dispatches this)
+    const onOrdersUpdated = (e) => {
+      loadOrders();
+      setStatusMessage('Orders updated');
+      setTimeout(() => setStatusMessage(''), 2000);
+    };
+    try {
+      if (typeof window !== 'undefined' && window.addEventListener) {
+        window.addEventListener('tapgo:orders-updated', onOrdersUpdated);
+      }
+    } catch (e) {}
+
+    return () => {
+      try {
+        if (typeof window !== 'undefined' && window.removeEventListener) {
+          window.removeEventListener('tapgo:orders-updated', onOrdersUpdated);
+        }
+      } catch (e) {}
+    };
   }, [isAuthenticated]);
 
   const loadOrders = async () => {
@@ -133,7 +178,9 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
   const handleSaveSettings = (e) => {
     e.preventDefault();
     setGoogleSheetsUrl(sheetsUrl);
-    
+    // save offers
+    setOffers({ en: offerEn, ta: offerTa });
+
     if (newPassword.trim()) {
       const pSuccess = updateAdminPassword(newPassword);
       if (pSuccess) {
@@ -150,11 +197,49 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
     setTimeout(() => setPasswordMessage(''), 4000);
   };
 
+  const handleAddVegetable = (e) => {
+    e.preventDefault();
+    if (!newVegNameEn.trim()) {
+      setStatusMessage('Provide English name for the vegetable');
+      setTimeout(() => setStatusMessage(''), 2000);
+      return;
+    }
+
+    const idBase = newVegNameEn.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+    const newId = `${idBase}_${Date.now()}`;
+    const newItem = {
+      id: newId,
+      nameEn: newVegNameEn.trim(),
+      nameTa: newVegNameTa.trim() || newVegNameEn.trim(),
+      category: newVegCategory,
+      price: Number(newVegPrice) || 0,
+      marketPrice: Number(newVegMarketPrice) || (Number(newVegPrice) || 0),
+      unit: newVegUnit,
+      minOrder: Number(newVegMinOrder) || 1,
+      image: newVegImage || '',
+      stock: Number(newVegStock) || 0,
+      outOfStock: (Number(newVegStock) || 0) <= 0,
+      descriptionEn: '',
+      descriptionTa: ''
+    };
+
+    const updated = [newItem, ...catalog];
+    onUpdateCatalog(updated);
+    // stop highlighting savings after adding new item
+    setHighlightSavings(false);
+    setShowAddForm(false);
+    setStatusMessage('New vegetable added');
+    setTimeout(() => setStatusMessage(''), 2000);
+    // reset form
+    setNewVegNameEn(''); setNewVegNameTa(''); setNewVegCategory('daily'); setNewVegPrice(''); setNewVegMarketPrice(''); setNewVegStock('0'); setNewVegUnit('kg'); setNewVegMinOrder('1'); setNewVegImage('');
+  };
+
   // Inventory Sourcing updates
   const startEditing = (veg) => {
     setEditingRowId(veg.id);
     setEditPrice(veg.price);
     setEditMarketPrice(veg.marketPrice || veg.price);
+    setEditStock(veg.stock ?? 0);
     setEditPhoto(veg.image);
     setEditNameEn(veg.nameEn);
     setEditNameTa(veg.nameTa);
@@ -172,10 +257,13 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
   const saveProductRow = (id) => {
     const updated = catalog.map(item => {
       if (item.id === id) {
+        const newStock = parseSaveValue(editStock, item.stock ?? 0);
         return {
           ...item,
           price: parseSaveValue(editPrice, item.price),
           marketPrice: parseSaveValue(editMarketPrice, item.marketPrice || item.price),
+          stock: newStock,
+          outOfStock: newStock <= 0 ? true : false,
           image: editPhoto.trim() || item.image,
           nameEn: editNameEn.trim() || item.nameEn,
           nameTa: editNameTa.trim() || item.nameTa
@@ -186,7 +274,9 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
     
     onUpdateCatalog(updated);
     setEditingRowId(null);
-    setStatusMessage('Item rates and details updated!');
+    // remove savings highlight after saving changes
+    setHighlightSavings(false);
+    setStatusMessage('Item rates and stock updated!');
     setTimeout(() => setStatusMessage(''), 3000);
   };
 
@@ -205,12 +295,17 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
     setTimeout(() => setStatusMessage(''), 2500);
   };
 
-  const resetToDefaultCatalog = () => {
-    if (window.confirm(lang === 'en' ? 'Are you sure you want to reset all rates and photos to default values?' : 'அனைத்து காய்கறி விலைகளையும் பழையபடி மாற்ற வேண்டுமா?')) {
-      localStorage.removeItem('tapgo_catalog_db');
-      window.location.reload();
-    }
-  };
+  const lowStockThreshold = 10;
+  const lowStockCount = catalog.filter(item => (item.stock ?? 0) <= lowStockThreshold).length;
+  const totalTapGoSavings = catalog.reduce((sum, item) => {
+    const market = Number(item.marketPrice ?? item.price);
+    const tapgo = Number(item.price);
+    return market > tapgo ? sum + (market - tapgo) : sum;
+  }, 0);
+  const totalPriceGapItems = catalog.reduce((count, item) => {
+    const market = Number(item.marketPrice ?? item.price);
+    return market > Number(item.price) ? count + 1 : count;
+  }, 0);
 
   // Filter Orders Logic
   const filteredOrders = orders.filter(order => {
@@ -230,7 +325,8 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
     const name = lang === 'en' ? veg.nameEn : veg.nameTa;
     const matchesSearch = name.toLowerCase().includes(vegSearch.toLowerCase());
     const matchesCategory = vegCategoryFilter === 'all' || veg.category === vegCategoryFilter;
-    return matchesSearch && matchesCategory;
+    const matchesStock = !showLowStockOnly || (veg.stock ?? 0) <= lowStockThreshold;
+    return matchesSearch && matchesCategory && matchesStock;
   });
 
   // Analytics Metrics
@@ -239,6 +335,42 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
     .reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
   
   const pendingOrders = orders.filter(o => o.status.toLowerCase() === 'pending').length;
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-slate-50 font-outfit flex items-center justify-center p-4">
+        <div className="w-full max-w-md bg-white rounded-3xl p-6 shadow-lg">
+          <div className="mb-6 text-center">
+            <Logo className="mx-auto h-12" />
+            <h1 className="mt-4 text-xl font-bold text-slate-900">Merchant Login</h1>
+            <p className="mt-2 text-sm text-slate-500">Enter admin password to access Merchant Slot.</p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 border border-slate-200 rounded-3xl bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                placeholder="Admin password"
+              />
+            </div>
+            {loginError && (
+              <p className="text-sm text-rose-600 font-semibold">{loginError}</p>
+            )}
+            <button
+              type="submit"
+              className="w-full py-3 bg-emerald-600 text-white rounded-3xl font-bold hover:bg-emerald-700 transition"
+            >
+              Login
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 font-outfit text-slate-800 pb-12">
@@ -335,7 +467,7 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                     Orders will sync to your Sheet. If left empty, TapGo will save data locally in this browser.
                   </p>
                 </div>
-                <div>
+                  <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
                     Change Merchant Admin Password
                   </label>
@@ -347,6 +479,28 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                     className="w-full px-3 py-2.5 bg-slate-50 focus:bg-white rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                   />
                 </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                      Offer Text (EN)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 10% off on onions"
+                      value={offerEn}
+                      onChange={(e) => setOfferEn(e.target.value)}
+                      className="w-full px-3 py-2.5 bg-slate-50 focus:bg-white rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                    />
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 mt-2">
+                      Offer Text (தமிழ்)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="எ.கா: வெங்காயத்திற்கு 10% தள்ளுபடி"
+                      value={offerTa}
+                      onChange={(e) => setOfferTa(e.target.value)}
+                      className="w-full px-3 py-2.5 bg-slate-50 focus:bg-white rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                    />
+                  </div>
               </div>
 
               <div className="flex items-center justify-between pt-2 border-t border-slate-100">
@@ -366,10 +520,9 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div className="bg-white border border-slate-200/60 p-4 rounded-2xl shadow-sm flex items-center gap-4">
             <div className="p-3 rounded-xl bg-emerald-50 text-emerald-700">
-              <DollarSign size={24} />
+              <IndianRupee size={24} />
             </div>
             <div>
-              <p className="text-xs font-semibold text-slate-400">Total Sales</p>
               <h4 className="text-lg md:text-xl font-extrabold text-slate-800">₹{totalSales}</h4>
             </div>
           </div>
@@ -628,8 +781,8 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
           <div className="space-y-6 animate-fade-in">
             {/* Inventory Controls */}
             <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3">
-              <div className="flex grow max-w-md gap-2">
-                <div className="relative grow">
+              <div className="flex grow max-w-2xl gap-2 flex-wrap">
+                <div className="relative grow min-w-[220px]">
                   <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                     <Search size={16} />
                   </span>
@@ -655,6 +808,75 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                 </select>
               </div>
 
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  onClick={() => setShowLowStockOnly((prev) => !prev)}
+                  className="px-4 py-2 bg-slate-100 text-slate-700 rounded-2xl text-xs font-bold hover:bg-slate-200 transition"
+                >
+                  {showLowStockOnly ? 'Show all items' : 'Low stock only'}
+                </button>
+                <button
+                  onClick={() => setHighlightSavings((prev) => !prev)}
+                  className={`px-4 py-2 rounded-2xl text-xs font-bold transition ${highlightSavings ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+                >
+                  {highlightSavings ? 'Hide savings highlight' : 'Highlight TapGo savings'}
+                </button>
+                <button
+                  onClick={() => setShowAddForm(prev => !prev)}
+                  className="px-4 py-2 rounded-2xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition"
+                >
+                  {showAddForm ? 'Close Add Form' : 'Add Vegetable'}
+                </button>
+              </div>
+            </div>
+
+            {/* Add Vegetable Form */}
+            {showAddForm && (
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm mb-4">
+                <form onSubmit={handleAddVegetable} className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <input value={newVegNameEn} onChange={e => setNewVegNameEn(e.target.value)} placeholder="English name" className="px-3 py-2 rounded-xl border border-slate-200" />
+                  <input value={newVegNameTa} onChange={e => setNewVegNameTa(e.target.value)} placeholder="தமிழ் பெயர் (optional)" className="px-3 py-2 rounded-xl border border-slate-200" />
+                  <select value={newVegCategory} onChange={e => setNewVegCategory(e.target.value)} className="px-3 py-2 rounded-xl border border-slate-200">
+                    <option value="daily">Daily</option>
+                    <option value="greens">Greens</option>
+                    <option value="herbs">Herbs</option>
+                    <option value="exotic">Exotic</option>
+                  </select>
+                  <input value={newVegPrice} onChange={e => setNewVegPrice(e.target.value)} placeholder="TapGo price" type="number" className="px-3 py-2 rounded-xl border border-slate-200" />
+                  <input value={newVegMarketPrice} onChange={e => setNewVegMarketPrice(e.target.value)} placeholder="Market price (optional)" type="number" className="px-3 py-2 rounded-xl border border-slate-200" />
+                  <input value={newVegStock} onChange={e => setNewVegStock(e.target.value)} placeholder="Stock qty" type="number" className="px-3 py-2 rounded-xl border border-slate-200" />
+                  <select value={newVegUnit} onChange={e => setNewVegUnit(e.target.value)} className="px-3 py-2 rounded-xl border border-slate-200">
+                    <option value="kg">kg</option>
+                    <option value="kattu">kattu</option>
+                    <option value="piece">piece</option>
+                    <option value="pack">pack</option>
+                  </select>
+                  <input value={newVegMinOrder} onChange={e => setNewVegMinOrder(e.target.value)} placeholder="Min order" type="number" className="px-3 py-2 rounded-xl border border-slate-200" />
+                  <input value={newVegImage} onChange={e => setNewVegImage(e.target.value)} placeholder="Image URL (optional)" className="px-3 py-2 rounded-xl border border-slate-200" />
+                  <div className="md:col-span-3 flex gap-2 mt-2">
+                    <button type="submit" className="px-4 py-2 bg-emerald-600 text-white rounded-xl">Add</button>
+                    <button type="button" onClick={() => setShowAddForm(false)} className="px-4 py-2 bg-slate-100 rounded-xl">Cancel</button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            <div className="grid gap-3 sm:grid-cols-3 mb-4">
+              <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-sm font-semibold">
+                <div className="text-slate-400 text-[10px] uppercase tracking-wider">TapGo savings</div>
+                <div className="mt-2 text-2xl text-emerald-700">₹{totalTapGoSavings}</div>
+                <div className="text-slate-500 text-xs mt-1">across {totalPriceGapItems} items.</div>
+              </div>
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm font-semibold">
+                <div className="text-slate-400 text-[10px] uppercase tracking-wider">Low stock</div>
+                <div className="mt-2 text-2xl text-rose-600">{lowStockCount}</div>
+                <div className="text-slate-500 text-xs mt-1">items at or below {lowStockThreshold} units.</div>
+              </div>
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-sm font-semibold">
+                <div className="text-slate-400 text-[10px] uppercase tracking-wider">Visible catalog</div>
+                <div className="mt-2 text-2xl text-slate-900">{filteredVegetables.length}</div>
+                <div className="text-slate-500 text-xs mt-1">items shown after filters.</div>
+              </div>
             </div>
 
             {/* Sourcing Editor Layout */}
@@ -666,9 +888,11 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                       <th className="p-4">Vegetable</th>
                       <th className="p-4">Names (EN / தமிழ்)</th>
                       <th className="p-4 text-center">Category</th>
-                      <th className="p-4 w-44">Market Rate (₹)</th>
-                      <th className="p-4 w-44">TapGo Rate (₹)</th>
-                      <th className="p-4 w-40 text-center">Stock Status</th>
+                      <th className="p-4 w-32">Market Rate (₹)</th>
+                      <th className="p-4 w-32">TapGo Rate (₹)</th>
+                      <th className="p-4 w-24">Savings</th>
+                      <th className="p-4 w-24 text-center">Stock</th>
+                      <th className="p-4 w-40 text-center">Status</th>
                       <th className="p-4">Daily Image URL</th>
                       <th className="p-4 text-center">Save</th>
                     </tr>
@@ -728,14 +952,15 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                                 <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
                                 <input
                                   type="number"
+                                  min="0"
                                   value={editMarketPrice}
                                   onChange={(e) => setEditMarketPrice(e.target.value)}
                                   className="pl-6 w-full px-2 py-1.5 bg-slate-50 rounded-xl border border-slate-200 text-sm font-bold focus:outline-emerald-500 focus:bg-white"
-                                  placeholder="Market Price"
+                                  placeholder="Market Rate"
                                 />
                               </div>
                             ) : (
-                              <div className="flex items-center gap-1">
+                              <div className="flex items-center justify-center gap-1">
                                 <span className="font-extrabold text-slate-400 text-xs line-through">₹{veg.marketPrice || veg.price}</span>
                                 <span className="text-[10px] text-slate-400">/ {displayUnit}</span>
                               </div>
@@ -749,6 +974,7 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                                 <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
                                 <input
                                   type="number"
+                                  min="0"
                                   value={editPrice}
                                   onChange={(e) => setEditPrice(e.target.value)}
                                   className="pl-6 w-full px-2 py-1.5 bg-slate-50 rounded-xl border border-slate-200 text-sm font-bold focus:outline-emerald-500 focus:bg-white"
@@ -756,25 +982,57 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                                 />
                               </div>
                             ) : (
-                              <div className="flex items-center gap-1">
+                              <div className="flex items-center justify-center gap-1">
                                 <span className="font-black text-emerald-700 text-sm">₹{veg.price}</span>
                                 <span className="text-xs text-slate-500">/ {displayUnit}</span>
                               </div>
                             )}
                           </td>
 
-                          {/* Stock Toggle Switch */}
+                          {/* Price Savings */}
+                          <td className="p-4 text-center">
+                            {(() => {
+                              const diff = Number(veg.marketPrice ?? veg.price) - Number(veg.price);
+                              if (diff > 0) {
+                                return <span className="text-emerald-700 font-bold">₹{diff}</span>;
+                              }
+                              return <span className="text-slate-400">-</span>;
+                            })()}
+                          </td>
+
+                          {/* Stock Quantity */}
+                          <td className={`p-4 ${highlightSavings && Number(veg.marketPrice ?? veg.price) - Number(veg.price) > 0 ? 'bg-emerald-50/50' : ''}`}>
+                            {isEditing ? (
+                              <div className="relative">
+                                <input
+                                  type="number"
+                                  min="0"
+                                  value={editStock}
+                                  onChange={(e) => setEditStock(e.target.value)}
+                                  className="w-full px-2 py-1.5 bg-slate-50 rounded-xl border border-slate-200 text-sm font-bold focus:outline-emerald-500 focus:bg-white"
+                                  placeholder="Stock qty"
+                                />
+                                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 text-[10px]">{displayUnit}</span>
+                              </div>
+                            ) : (
+                              <div className="text-center text-sm font-bold text-slate-800">
+                                {veg.stock ?? 0} {displayUnit}
+                              </div>
+                            )}
+                          </td>
+
+                          {/* Stock Status Toggle */}
                           <td className="p-4">
                             <button
                               onClick={() => toggleStockStatus(veg.id, veg.outOfStock)}
                               className={`w-full py-1.5 px-2 rounded-xl text-xs font-extrabold transition-all border cursor-pointer ${
-                                veg.outOfStock
+                                (veg.outOfStock || (veg.stock ?? 0) <= 0)
                                   ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100'
                                   : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
                               }`}
                             >
-                              {veg.outOfStock 
-                                ? (lang === 'en' ? 'OUT OF STOCK' : 'கையிருப்பு இல்லை') 
+                              {(veg.outOfStock || (veg.stock ?? 0) <= 0)
+                                ? (lang === 'en' ? 'OUT OF STOCK' : 'கையிருப்பு இல்லை')
                                 : (lang === 'en' ? 'IN STOCK' : 'சரக்கு உள்ளது')}
                             </button>
                           </td>

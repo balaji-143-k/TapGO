@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useLanguage } from './LanguageContext';
+import { stripName } from '../utils/nameUtils';
 import { CheckCircle2, MessageSquare, ArrowLeft, Star, RefreshCw } from 'lucide-react';
 
 export default function OrderConfirmation({ order, onBackToStore, supportPhone = '919626815733' }) {
@@ -17,7 +18,7 @@ export default function OrderConfirmation({ order, onBackToStore, supportPhone =
 
   const buildMerchantMessage = () => {
     const itemsText = rawItems.map(item => {
-      const pName = item.nameEn;
+      const pName = stripName(item.nameEn);
       const pUnit = item.unit;
       return `• ${pName}: ${item.quantity}${pUnit} @ ₹${item.price}/${pUnit} = ₹${item.price * item.quantity}`;
     }).join('\n');
@@ -137,7 +138,8 @@ _Please confirm this order ASAP!_`;
             <span className="block text-[10px] font-black text-slate-400 uppercase tracking-wider">Sourced List</span>
             <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
               {rawItems.map((item, idx) => {
-                const itemName = lang === 'en' ? item.nameEn : item.nameTa;
+                const itemNameRaw = lang === 'en' ? item.nameEn : item.nameTa;
+                const itemName = stripName(itemNameRaw);
                 const itemUnit = lang === 'en' ? item.unit : (item.unit === 'kg' ? 'கிலோ' : item.unit === 'kattu' ? 'கட்டு' : item.unit === 'piece' ? 'பீஸ்' : 'பாக்கெட்');
                 return (
                   <div key={idx} className="flex justify-between items-center text-[11px] text-slate-700 font-medium">

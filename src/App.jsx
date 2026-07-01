@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider, useLanguage } from './components/LanguageContext';
-import { vegetables, categories } from './data/vegetables';
+import { vegetables, categories as staticCategories } from './data/vegetables';
 import Logo from './components/Logo';
 import ProductCard from './components/ProductCard';
 import Cart from './components/Cart';
@@ -10,6 +10,7 @@ import WhatsappButton from './components/WhatsappButton';
 import BusinessCardModal from './components/BusinessCardModal';
 import InstallPrompt from './components/InstallPrompt';
 import { generateOrderId, saveNewOrder } from './services/googleSheets';
+import { getProducts, saveProducts, getCategories } from './services/crudService';
 import {
   ShoppingBag,
   Search,
@@ -97,15 +98,25 @@ function BottomNav({ cart, onOpenCart, onOpenCardModal, toggleLanguage, lang, on
 function Storefront({ cart, onAddToCart, onUpdateQuantity, onOpenCart, onNavigate, catalog, onOpenCardModal, onUpdateCatalog }) {
   const { lang, toggleLanguage, t } = useLanguage();
   const [offerText, setOfferText] = useState('');
+  const [categories, setCategories] = useState([{ id: 'all', en: 'All Veggies', ta: 'அனைத்தும்' }]);
 
   useEffect(() => {
     const offers = getOffers();
     setOfferText(lang === 'en' ? (offers.en || '') : (offers.ta || ''));
   }, [lang]);
+
+  useEffect(() => {
+    const loadCats = () => {
+      const cats = getCategories();
+      setCategories([{ id: 'all', en: 'All Veggies', ta: 'அனைத்தும்', emoji: '🛒' }, ...cats.map(c => ({ id: c.id, en: c.nameEn, ta: c.nameTa }))]);
+    };
+    loadCats();
+    window.addEventListener('tapgo:tapgo_categories_db', loadCats);
+    return () => window.removeEventListener('tapgo:tapgo_categories_db', loadCats);
+  }, []);
+
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('daily');
-  const [newVegNameEn, setNewVegNameEn] = useState('');
-  const [newVegNameTa, setNewVegNameTa] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [showSearch, setShowSearch] = useState(false);
 
   const filteredVegetables = catalog.filter(item => {
@@ -234,55 +245,6 @@ function Storefront({ cart, onAddToCart, onUpdateQuantity, onOpenCart, onNavigat
             <h2 className="text-sm font-black text-slate-800 uppercase tracking-wide">{t('categoriesLabel')}</h2>
             <span className="text-xs text-slate-400 font-semibold">{filteredVegetables.length} items</span>
           </div>
-          <div className="flex flex-col gap-2 bg-white rounded-xl border border-slate-200 px-3 py-2">
-            <input
-              type="text"
-              placeholder={lang === 'en' ? 'English name' : 'ஆங்கில பெயர்'}
-              value={newVegNameEn}
-              onChange={e => {
-                const value = e.target.value;
-                setNewVegNameEn(value);
-                setNewVegNameTa(value);
-              }}
-              className="text-sm pl-2 pr-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-200"
-            />
-            <input
-              type="text"
-              placeholder={lang === 'en' ? 'Tamil name' : 'தமிழ் பெயர்'}
-              value={newVegNameTa}
-              onChange={e => setNewVegNameTa(e.target.value)}
-              className="text-sm pl-2 pr-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-200 font-tamil"
-            />
-            <button
-              onClick={() => {
-                if (!newVegNameEn.trim() || !newVegNameTa.trim()) return;
-                const idBase = newVegNameEn.trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
-                const newId = `custom_${idBase}_${Date.now()}`;
-                const categoryToUse = selectedCategory === 'all' ? 'daily' : selectedCategory;
-                const newItem = {
-                  id: newId,
-                  nameEn: newVegNameEn.trim(),
-                  nameTa: newVegNameTa.trim(),
-                  category: categoryToUse,
-                  price: 0,
-                  marketPrice: 0,
-                  unit: 'kg',
-                  minOrder: 1,
-                  stock: 100,
-                  outOfStock: false,
-                  image: '',
-                  descriptionEn: '',
-                  descriptionTa: ''
-                };
-                onUpdateCatalog([...catalog, newItem]);
-                setNewVegNameEn('');
-                setNewVegNameTa('');
-              }}
-              className="px-3 py-1.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg whitespace-nowrap transition-colors"
-            >
-              {lang === 'en' ? 'Add Vegetable' : 'சேர்க்கு'}
-            </button>
-          </div>
         </div>
 
         {/* Product Grid */}
@@ -342,13 +304,24 @@ function MainApp() {
   }));
 
   const [catalog, setCatalog] = useState(() => {
-    const saved = localStorage.getItem('tapgo_catalog_db');
-    return saved ? JSON.parse(saved) : defaultCatalog;
+    // Use crudService products if available, else seed from static vegetables
+    const saved = getProducts();
+    if (saved && saved.length > 0) return saved;
+    // Seed crudService with static vegetable data on first run
+    saveProducts(defaultCatalog);
+    return defaultCatalog;
   });
 
+  // Keep catalog in sync with crudService events
+  useEffect(() => {
+    const handler = () => setCatalog(getProducts());
+    window.addEventListener('tapgo:tapgo_catalog_db', handler);
+    return () => window.removeEventListener('tapgo:tapgo_catalog_db', handler);
+  }, []);
+
   const handleUpdateCatalog = (newCatalog) => {
+    saveProducts(newCatalog);
     setCatalog(newCatalog);
-    localStorage.setItem('tapgo_catalog_db', JSON.stringify(newCatalog));
   };
 
   const handleAddToCart = (product) => {

@@ -9,6 +9,9 @@ import {
   getOffers,
   setOffers
 } from '../services/googleSheets';
+import { deleteOrder, getOrders, getProducts, getCategories } from '../services/crudService';
+import ProductCRUD from './ProductCRUD';
+import CategoryCRUD from './CategoryCRUD';
 import { useLanguage } from './LanguageContext';
 import { 
   Search, 
@@ -36,7 +39,11 @@ import {
   RotateCcw,
   Image as ImageIcon,
   TrendingDown,
-  Upload
+  Upload,
+  Package,
+  Tag,
+  Trash2,
+  AlertTriangle
 } from 'lucide-react';
 import Logo from './Logo';
 
@@ -336,6 +343,17 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
   
   const pendingOrders = orders.filter(o => o.status.toLowerCase() === 'pending').length;
 
+  // Order delete state
+  const [confirmDeleteOrder, setConfirmDeleteOrder] = useState(null);
+  const handleDeleteOrder = (orderId) => {
+    deleteOrder(orderId);
+    setOrders(prev => prev.filter(o => o.orderId !== orderId));
+    setSelectedOrder(null);
+    setConfirmDeleteOrder(null);
+    setStatusMessage('Order deleted!');
+    setTimeout(() => setStatusMessage(''), 2000);
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-slate-50 font-outfit flex items-center justify-center p-4">
@@ -560,30 +578,54 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
           </div>
         </div>
 
-        {/* Tab Switcher for Orders vs Rates */}
-        <div className="flex border-b border-slate-200 mb-6 bg-white p-1 rounded-2xl border shadow-sm">
+        {/* Tab Switcher */}
+        <div className="flex border-b border-slate-200 mb-6 bg-white p-1 rounded-2xl border shadow-sm gap-1">
           <button
             onClick={() => setActiveSubTab('orders')}
-            className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 font-outfit ${
+            className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 font-outfit ${
               activeSubTab === 'orders'
                 ? 'bg-emerald-600 text-white shadow-sm'
                 : 'text-slate-500 hover:text-slate-800'
             }`}
           >
-            <ShoppingBag size={18} />
-            <span>Orders Log ({orders.length})</span>
+            <ShoppingBag size={15} />
+            <span>Orders ({orders.length})</span>
           </button>
           
           <button
             onClick={() => setActiveSubTab('inventory')}
-            className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 font-outfit ${
+            className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 font-outfit ${
               activeSubTab === 'inventory'
                 ? 'bg-emerald-600 text-white shadow-sm'
                 : 'text-slate-500 hover:text-slate-800'
             }`}
           >
-            <Layers size={18} />
-            <span>Rates & Stock Manager ({catalog.length})</span>
+            <Layers size={15} />
+            <span>Rates & Stock</span>
+          </button>
+
+          <button
+            onClick={() => setActiveSubTab('products')}
+            className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 font-outfit ${
+              activeSubTab === 'products'
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <Package size={15} />
+            <span>Products</span>
+          </button>
+
+          <button
+            onClick={() => setActiveSubTab('categories')}
+            className={`flex-1 py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5 font-outfit ${
+              activeSubTab === 'categories'
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'text-slate-500 hover:text-slate-800'
+            }`}
+          >
+            <Tag size={15} />
+            <span>Categories</span>
           </button>
         </div>
 
@@ -1129,6 +1171,20 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
             </div>
           </div>
         )}
+
+        {/* Tab 3: Products CRUD */}
+        {activeSubTab === 'products' && (
+          <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+            <ProductCRUD />
+          </div>
+        )}
+
+        {/* Tab 4: Categories CRUD */}
+        {activeSubTab === 'categories' && (
+          <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+            <CategoryCRUD />
+          </div>
+        )}
       </div>
 
       {/* View Order Detail Modal */}
@@ -1223,11 +1279,39 @@ export default function AdminDashboard({ onBackToStore, catalog, onUpdateCatalog
                 <span>WhatsApp Customer</span>
               </a>
               <button
+                onClick={() => setConfirmDeleteOrder(selectedOrder.orderId)}
+                className="flex items-center gap-1 px-4 bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2.5 rounded-xl text-xs transition-all cursor-pointer border border-red-100"
+              >
+                <Trash2 size={14} />
+                Delete
+              </button>
+              <button
                 onClick={() => setSelectedOrder(null)}
                 className="px-5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition-all cursor-pointer"
               >
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm Delete Order */}
+      {confirmDeleteOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-xs shadow-2xl">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center">
+                <AlertTriangle size={22} className="text-red-600" />
+              </div>
+              <div>
+                <p className="font-black text-slate-800 text-sm">Delete Order?</p>
+                <p className="text-xs text-slate-500 mt-0.5 font-mono">{confirmDeleteOrder}</p>
+              </div>
+            </div>
+            <div className="flex gap-2 mt-4">
+              <button onClick={() => setConfirmDeleteOrder(null)} className="flex-1 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-600 hover:bg-slate-50">Cancel</button>
+              <button onClick={() => handleDeleteOrder(confirmDeleteOrder)} className="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-bold hover:bg-red-700">Delete</button>
             </div>
           </div>
         </div>

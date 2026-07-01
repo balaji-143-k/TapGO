@@ -46,6 +46,7 @@ export default function ProductCard({ product, cartItem, onAddToCart, onUpdateQu
     }`}>
       {/* Product Image & Badge */}
       <div className="relative aspect-video overflow-hidden bg-slate-100">
+        {product.image ? (
         <img
           src={product.image}
           alt={name}
@@ -54,6 +55,9 @@ export default function ProductCard({ product, cartItem, onAddToCart, onUpdateQu
             !isOutOfStock && 'group-hover:scale-105'
           }`}
         />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-3xl bg-slate-100">🥬</div>
+        )}
         
         {/* Category Badge */}
         <div className="absolute top-2 left-2 bg-emerald-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">

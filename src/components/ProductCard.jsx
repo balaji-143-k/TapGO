@@ -39,10 +39,10 @@ export default function ProductCard({ product, cartItem, onAddToCart, onUpdateQu
   };
 
   return (
-    <div className={`glass-card rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full group border bg-white ${
+    <div className={`glass-panel rounded-2xl overflow-hidden flex flex-col h-full group ${
       isOutOfStock 
-        ? 'border-slate-200 opacity-75' 
-        : 'border-slate-100 hover:border-emerald-100'
+        ? 'opacity-75' 
+        : 'hover:border-emerald-200 hover:shadow-emerald-500/10'
     }`}>
       {/* Product Image & Badge */}
       <div className="relative aspect-video overflow-hidden bg-slate-100">
@@ -157,26 +157,26 @@ export default function ProductCard({ product, cartItem, onAddToCart, onUpdateQu
           ) : quantity === 0 ? (
             <button
               onClick={() => onAddToCart(product)}
-              className="w-full flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl transition-all duration-200 transform active:scale-95 text-xs shadow-sm shadow-emerald-250 cursor-pointer"
+              className="w-full flex items-center justify-center gap-1.5 glass-button py-2.5 px-3 rounded-xl text-xs"
             >
               <Plus size={14} />
               <span>{t('addToCart')}</span>
             </button>
           ) : (
-            <div className="flex items-center justify-between w-full bg-emerald-600 text-white rounded-xl py-1 px-2 shadow-sm">
+            <div className="flex items-center justify-between w-full glass-button rounded-xl py-1 px-1">
               <button
                 onClick={() => onUpdateQuantity(product.id, quantity - product.minOrder)}
-                className="p-1.5 hover:bg-emerald-700 rounded-lg transition-colors cursor-pointer"
+                className="p-1.5 hover:bg-white/20 rounded-lg transition-colors cursor-pointer shrink-0"
                 aria-label="Decrease quantity"
               >
                 <Minus size={14} />
               </button>
-              <span className="font-bold text-xs w-8 text-center">
+              <span className="font-bold text-[11px] sm:text-xs flex-1 text-center px-1 truncate" title={`${quantity} ${getTranslatedUnit(product.unit)}`}>
                 {quantity} {getTranslatedUnit(product.unit)}
               </span>
               <button
                 onClick={() => onUpdateQuantity(product.id, quantity + product.minOrder)}
-                className="p-1.5 hover:bg-emerald-700 rounded-lg transition-colors cursor-pointer"
+                className="p-1.5 hover:bg-white/20 rounded-lg transition-colors cursor-pointer shrink-0"
                 aria-label="Increase quantity"
               >
                 <Plus size={14} />

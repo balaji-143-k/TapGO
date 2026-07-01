@@ -37,14 +37,14 @@ function BottomNav({ cart, onOpenCart, onOpenCardModal, toggleLanguage, lang, on
   const cartTotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
 
   return (
-    <div className="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-slate-200 shadow-2xl"
+    <div className="fixed bottom-0 inset-x-0 z-40 glass-nav"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
 
       {/* Cart Checkout Strip (shows only when cart has items) */}
       {cart.length > 0 && (
         <button
           onClick={onOpenCart}
-          className="w-full flex items-center justify-between bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white px-4 py-2.5 transition-all"
+          className="w-full flex items-center justify-between glass-button px-4 py-3"
         >
           <div className="flex items-center gap-2">
             <span className="bg-white/20 rounded-lg px-2 py-0.5 text-xs font-black">{cartCount} items</span>
@@ -127,10 +127,10 @@ function Storefront({ cart, onAddToCart, onUpdateQuantity, onOpenCart, onNavigat
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 font-outfit" style={{ paddingBottom: '110px' }}>
+    <div className="min-h-screen font-outfit" style={{ paddingBottom: '110px' }}>
 
       {/* ── Mobile Header ── */}
-      <header className="sticky top-0 z-30 bg-white border-b border-slate-100 shadow-sm"
+      <header className="sticky top-0 z-30 glass-nav"
         style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         <div className="flex items-center justify-between px-4 h-14">
           <Logo className="h-9" />
@@ -158,7 +158,7 @@ function Storefront({ cart, onAddToCart, onUpdateQuantity, onOpenCart, onNavigat
                 placeholder={t('searchPlaceholder')}
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/30 focus:border-emerald-500 transition-all font-medium"
+                className="w-full pl-9 pr-4 py-2.5 glass-input rounded-xl text-sm font-medium"
               />
             </div>
             {searchQuery && (
@@ -177,9 +177,9 @@ function Storefront({ cart, onAddToCart, onUpdateQuantity, onOpenCart, onNavigat
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-3.5 py-1.5 text-xs font-bold rounded-full shrink-0 transition-all border active:scale-95 ${isActive
-                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm shadow-emerald-200'
-                  : 'bg-white text-slate-600 border-slate-200 hover:border-emerald-300'
+                className={`px-3.5 py-1.5 text-xs font-bold rounded-full shrink-0 transition-all active:scale-95 ${isActive
+                  ? 'glass-button'
+                  : 'glass-panel text-slate-600'
                   }`}
               >
                 {lang === 'en' ? cat.en : cat.ta}
@@ -222,7 +222,7 @@ function Storefront({ cart, onAddToCart, onUpdateQuantity, onOpenCart, onNavigat
         </section>
 
         {/* Business Type Chips */}
-        <section className="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm">
+        <section className="glass-panel rounded-2xl p-3.5">
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">{t('bulkSourcing')}</p>
           <div className="grid grid-cols-2 gap-2">
             {[
@@ -231,7 +231,7 @@ function Storefront({ cart, onAddToCart, onUpdateQuantity, onOpenCart, onNavigat
               { icon: Utensils, en: 'Mess & Canteens', ta: 'மெஸ் & கேன்டீன்' },
               { icon: Store, en: 'Tea Shops & Stalls', ta: 'டீக்கடைகள்' },
             ].map((b, i) => (
-              <div key={i} className="flex items-center gap-2 p-2 bg-slate-50 rounded-xl border border-slate-100 text-xs font-semibold text-slate-700">
+              <div key={i} className="flex items-center gap-2 p-2 glass-panel rounded-xl text-xs font-semibold text-slate-700">
                 <b.icon size={14} className="text-emerald-600 shrink-0" />
                 <span>{lang === 'en' ? b.en : b.ta}</span>
               </div>
@@ -249,7 +249,7 @@ function Storefront({ cart, onAddToCart, onUpdateQuantity, onOpenCart, onNavigat
 
         {/* Product Grid */}
         {filteredVegetables.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-2xl border border-slate-200">
+          <div className="text-center py-16 glass-panel rounded-2xl">
             <p className="text-base font-bold text-slate-400 mb-1">No vegetables found</p>
             <p className="text-xs text-slate-300">Try a different category or search term</p>
           </div>

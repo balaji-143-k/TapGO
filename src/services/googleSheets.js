@@ -39,7 +39,7 @@
  *     if (payload.action === 'updateStatus') {
  *       var data = sheet.getDataRange().getValues();
  *       var orderIdCol = 0; // Column A
- *       var statusCol = 7;   // Column H
+ *       var statusCol = 8;   // Column I (Status is the 9th column)
  *       var rowUpdated = false;
  *       
  *       for (var i = 1; i < data.length; i++) {

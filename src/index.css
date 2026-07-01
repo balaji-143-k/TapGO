@@ -8,10 +8,13 @@
   }
 
   body {
-    @apply bg-slate-50 text-slate-800 antialiased;
+    @apply text-slate-800 antialiased;
     font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
     overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
+    /* Beautiful Liquid Background */
+    background: linear-gradient(135deg, #e0f2fe 0%, #dcfce7 50%, #f0fdf4 100%);
+    background-attachment: fixed;
   }
 
   /* Prevent zoom on input focus (iOS) */
@@ -48,6 +51,34 @@
   .animate-slide-up  { animation: slide-up 0.30s cubic-bezier(0.32, 0.72, 0, 1) both; }
   .animate-slide-down { animation: slide-down 0.25s ease-out both; }
 
-  /* Card & Glass */
-  .glass-card { @apply bg-white/90 backdrop-blur-sm; }
+  /* Liquid Glass Utilities */
+  .glass-panel { 
+    @apply bg-white/70 backdrop-blur-xl border border-white/50 shadow-lg shadow-emerald-900/5;
+  }
+  
+  .glass-nav {
+    @apply bg-white/80 backdrop-blur-2xl border-b border-white/60 shadow-sm shadow-emerald-900/5;
+  }
+
+  .glass-button {
+    @apply relative overflow-hidden bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold transition-all duration-300 shadow-md shadow-emerald-500/30 hover:shadow-lg hover:shadow-emerald-500/40 hover:-translate-y-0.5 active:scale-95;
+  }
+  
+  .glass-button::after {
+    content: '';
+    @apply absolute top-0 left-0 w-full h-full bg-white/20 opacity-0 transition-opacity duration-300;
+  }
+  
+  .glass-button:hover::after {
+    @apply opacity-100;
+  }
+  
+  .glass-input {
+    @apply bg-white/60 backdrop-blur-md border border-white/60 focus:bg-white/90 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20 transition-all shadow-inner;
+  }
+
+  /* Retro-compatibility */
+  .glass-card { 
+    @apply bg-white/70 backdrop-blur-xl border border-white/50 shadow-lg shadow-emerald-900/5; 
+  }
 }

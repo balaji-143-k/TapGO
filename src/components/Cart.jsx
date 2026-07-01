@@ -103,9 +103,9 @@ export default function Cart({
       />
 
       {/* Cart Panel */}
-      <div className="relative w-full max-w-lg bg-white h-full shadow-2xl flex flex-col z-10 transition-transform duration-300">
+      <div className="relative w-full max-w-lg bg-white/80 backdrop-blur-2xl h-full shadow-2xl flex flex-col z-10 transition-transform duration-300 border-l border-white/50">
         {/* Header */}
-        <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-emerald-600 text-white">
+        <div className="p-4 border-b border-white/40 flex items-center justify-between glass-button">
           <div className="flex items-center gap-2">
             <ShoppingBag size={20} />
             <h2 className="text-lg font-bold font-outfit">{t('cartTitle')}</h2>
@@ -149,7 +149,7 @@ export default function Cart({
                   </button>
                 </div>
                 
-                <div className="divide-y divide-slate-100 bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm">
+                <div className="divide-y divide-white/40 glass-panel rounded-2xl overflow-hidden shadow-sm">
                   {cartItems.map((item) => {
                     const itemNameRaw = lang === 'en' ? item.nameEn : item.nameTa;
                     const itemName = stripName(itemNameRaw);
@@ -170,19 +170,19 @@ export default function Cart({
                         </div>
                         
                         <div className="flex items-center gap-2.5">
-                          <div className="flex items-center bg-emerald-50 text-emerald-800 rounded-lg p-1 border border-emerald-100">
+                          <div className="flex items-center glass-button text-white rounded-lg p-1">
                             <button 
                               onClick={() => onUpdateQuantity(item.id, item.quantity - item.minOrder)}
-                              className="px-1.5 py-0.5 hover:bg-emerald-100 rounded-md font-bold text-sm cursor-pointer"
+                              className="px-1.5 py-0.5 hover:bg-white/20 rounded-md font-bold text-sm cursor-pointer shrink-0"
                             >
                               -
                             </button>
-                            <span className="font-bold text-xs px-2 text-center min-w-8">
+                            <span className="font-bold text-[11px] sm:text-xs px-1 text-center flex-1 min-w-0 truncate" title={`${item.quantity} ${itemUnit}`}>
                               {item.quantity} {itemUnit}
                             </span>
                             <button 
                               onClick={() => onUpdateQuantity(item.id, item.quantity + item.minOrder)}
-                              className="px-1.5 py-0.5 hover:bg-emerald-100 rounded-md font-bold text-sm cursor-pointer"
+                              className="px-1.5 py-0.5 hover:bg-white/20 rounded-md font-bold text-sm cursor-pointer shrink-0"
                             >
                               +
                             </button>
@@ -199,7 +199,7 @@ export default function Cart({
               </div>
 
               {/* Order Notes / Pricing Notice */}
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-500 italic">
+              <div className="glass-panel rounded-xl p-3 text-xs text-slate-500 italic">
                 {t('quickNote')}
               </div>
 
@@ -220,7 +220,7 @@ export default function Cart({
                     placeholder={t('customerNamePl')}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className={`w-full px-3.5 py-2.5 bg-slate-50 hover:bg-slate-100/50 focus:bg-white rounded-xl border ${errors.name ? 'border-red-500' : 'border-slate-200'} text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all`}
+                    className={`w-full px-3.5 py-2.5 glass-input rounded-xl text-sm transition-all ${errors.name ? 'border-red-500' : ''}`}
                   />
                   {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                 </div>
@@ -241,7 +241,7 @@ export default function Cart({
                       placeholder={t('phonePl')}
                       value={phone}
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                      className={`w-full pl-12 pr-3.5 py-2.5 bg-slate-50 hover:bg-slate-100/50 focus:bg-white rounded-xl border ${errors.phone ? 'border-red-500' : 'border-slate-200'} text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-semibold tracking-wider`}
+                      className={`w-full pl-12 pr-3.5 py-2.5 glass-input rounded-xl text-sm transition-all font-semibold tracking-wider ${errors.phone ? 'border-red-500' : ''}`}
                     />
                   </div>
                   {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
@@ -255,7 +255,7 @@ export default function Cart({
                   <select
                     value={businessType}
                     onChange={(e) => setBusinessType(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 hover:bg-slate-100/50 focus:bg-white rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
+                    className="w-full px-3.5 py-2.5 glass-input rounded-xl text-sm transition-all font-medium"
                   >
                     <option value="retail">{tBiz('retail')}</option>
                     <option value="hotel">{tBiz('hotel')}</option>
@@ -274,7 +274,7 @@ export default function Cart({
                   <select
                     value={deliveryTiming}
                     onChange={(e) => setDeliveryTiming(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-slate-50 hover:bg-slate-100/50 focus:bg-white rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
+                    className="w-full px-3.5 py-2.5 glass-input rounded-xl text-sm transition-all font-medium"
                   >
                     <option value="morning">{tTime('morning')}</option>
                     <option value="lateMorning">{tTime('lateMorning')}</option>
@@ -293,7 +293,7 @@ export default function Cart({
                     value={deliveryNote}
                     onChange={(e) => setDeliveryNote(e.target.value)}
                     rows="2"
-                    className="w-full px-3.5 py-2.5 bg-slate-50 hover:bg-slate-100/50 focus:bg-white rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all resize-none"
+                    className="w-full px-3.5 py-2.5 glass-input rounded-xl text-sm transition-all resize-none"
                   />
                 </div>
               </form>
@@ -303,7 +303,7 @@ export default function Cart({
 
         {/* Footer Billing Area */}
         {cartItems.length > 0 && (
-          <div className="p-4 border-t border-slate-100 bg-slate-50">
+          <div className="p-4 border-t border-white/50 glass-nav">
             {/* Bill Summary */}
             <div className="space-y-2 mb-4 text-sm font-medium text-slate-600">
               <div className="flex justify-between">
@@ -330,7 +330,7 @@ export default function Cart({
             <button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-bold py-3.5 px-4 rounded-xl transition-all duration-200 transform active:scale-95 shadow-md shadow-emerald-250 cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 glass-button disabled:opacity-50 font-bold py-3.5 px-4 rounded-xl transition-all duration-200 transform active:scale-95 shadow-md cursor-pointer"
             >
               <span>{isSubmitting ? t('loading') : t('placeOrderSheetBtn')}</span>
               <ArrowRight size={18} />

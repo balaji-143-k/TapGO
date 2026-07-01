@@ -249,7 +249,7 @@ export const saveNewOrder = async (order) => {
         method: 'POST',
         mode: 'cors',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'text/plain;charset=utf-8',
         },
         body: JSON.stringify(order)
       });
@@ -306,7 +306,7 @@ export const updateOrderStatus = async (orderId, newStatus) => {
         method: 'POST',
         mode: 'cors',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'text/plain;charset=utf-8',
         },
         body: JSON.stringify({
           action: 'updateStatus',

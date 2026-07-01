@@ -11,11 +11,12 @@ export default function Cart({
   onClearCart,
   onOrderPlaced 
 }) {
-  const { lang, t, tBiz } = useLanguage();
+  const { lang, t, tBiz, tTime } = useLanguage();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [businessType, setBusinessType] = useState('retail');
   const [deliveryNote, setDeliveryNote] = useState('');
+  const [deliveryTiming, setDeliveryTiming] = useState('morning');
   
   // Validation errors
   const [errors, setErrors] = useState({});
@@ -26,10 +27,12 @@ export default function Cart({
     const savedName = localStorage.getItem('tapgo_customer_name') || '';
     const savedPhone = localStorage.getItem('tapgo_customer_phone') || '';
     const savedBizType = localStorage.getItem('tapgo_customer_biztype') || 'retail';
+    const savedTiming = localStorage.getItem('tapgo_customer_timing') || 'morning';
     
     setName(savedName);
     setPhone(savedPhone);
     setBusinessType(savedBizType);
+    setDeliveryTiming(savedTiming);
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -61,6 +64,7 @@ export default function Cart({
     localStorage.setItem('tapgo_customer_name', name.trim());
     localStorage.setItem('tapgo_customer_phone', phone.trim());
     localStorage.setItem('tapgo_customer_biztype', businessType);
+    localStorage.setItem('tapgo_customer_timing', deliveryTiming);
 
     // Format products text list for Sheets
     const productSummary = cartItems.map(item => {
@@ -70,6 +74,9 @@ export default function Cart({
     }).join(', ');
 
     // Prepare order object
+    const timeLabel = tTime(deliveryTiming);
+    const combinedNote = deliveryNote.trim() ? `[Time: ${timeLabel}] ${deliveryNote.trim()}` : `[Time: ${timeLabel}]`;
+
     const newOrder = {
       name: name.trim(),
       phone: phone.trim(),
@@ -77,7 +84,8 @@ export default function Cart({
       product: productSummary,
       quantity: cartItems.reduce((sum, item) => sum + item.quantity, 0),
       totalAmount: grandTotal,
-      deliveryNote: deliveryNote.trim(),
+      deliveryNote: combinedNote,
+      deliveryTime: deliveryTiming,
       // These will be filled by the parent container calling our order generator
       itemsRaw: cartItems // Keep raw items for rendering success summary
     };
@@ -258,6 +266,23 @@ export default function Cart({
                   </select>
                 </div>
 
+                {/* Delivery Timing */}
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1.5">
+                    {t('deliveryTimingLabel')} *
+                  </label>
+                  <select
+                    value={deliveryTiming}
+                    onChange={(e) => setDeliveryTiming(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 hover:bg-slate-100/50 focus:bg-white rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
+                  >
+                    <option value="morning">{tTime('morning')}</option>
+                    <option value="lateMorning">{tTime('lateMorning')}</option>
+                    <option value="afternoon">{tTime('afternoon')}</option>
+                    <option value="evening">{tTime('evening')}</option>
+                  </select>
+                </div>
+
                 {/* Delivery instructions */}
                 <div>
                   <label className="block text-xs font-semibold text-slate-600 mb-1.5">
@@ -288,7 +313,7 @@ export default function Cart({
               <div className="flex justify-between items-center text-xs">
                 <span>{t('deliveryTime')}</span>
                 <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md">
-                  {t('deliveryTimeVal')}
+                  {t('deliveryTimeVal')} ({tTime(deliveryTiming)})
                 </span>
               </div>
               <div className="flex justify-between">

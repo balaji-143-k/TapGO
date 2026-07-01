@@ -7,11 +7,11 @@ export const useLanguage = () => useContext(LanguageContext);
 export const translations = {
   en: {
     appName: 'TapGo',
-    tagline: 'Order Veggies Today, Get Them Fresh Tomorrow Morning!',
-    subTagline: '⏰ Order before 10 PM. We buy fresh at 4 AM from the market and deliver directly to you!',
+    tagline: 'Order Veggies Today, Get Them Fresh Tomorrow!',
+    subTagline: '⏰ Order anytime! We buy fresh from the market and deliver directly to you tomorrow.',
     bulkSourcing: 'We Supply Fresh Vegetables To:',
     searchPlaceholder: 'Search fresh vegetables...',
-    placeOrderInfo: '⏰ Order by 10:00 PM today. Sourced fresh from the market tomorrow morning at 4 AM and delivered to you!',
+    placeOrderInfo: '⏰ Order anytime today. Sourced fresh from the market and delivered to you tomorrow at your chosen time!',
     categoriesLabel: 'Vegetable Catalog',
     addToCart: 'Add',
     added: 'Added',
@@ -21,7 +21,7 @@ export const translations = {
     item: 'item',
     total: 'Total',
     deliveryTime: 'Delivery Time',
-    deliveryTimeVal: 'Tomorrow Morning (6 AM - 9 AM)',
+    deliveryTimeVal: 'Tomorrow',
     deliveryCharge: 'Delivery Charge',
     free: 'FREE',
     grandTotal: 'Grand Total',
@@ -76,15 +76,22 @@ export const translations = {
       store: 'Grocery Store / மளிகை கடை',
       bulk: 'Bulk Buyer / மொத்த கொள்முதல்'
     },
-    quickNote: 'Note: Market rates fluctuate daily. TapGo guarantees the lowest wholesale rate at the time of purchase!'
+    quickNote: 'Note: Market rates fluctuate daily. TapGo guarantees the lowest wholesale rate at the time of purchase!',
+    deliveryTimingLabel: 'Preferred Delivery Timing',
+    timeSlots: {
+      morning: 'Morning (6 AM - 9 AM)',
+      lateMorning: 'Late Morning (9 AM - 12 PM)',
+      afternoon: 'Afternoon (12 PM - 3 PM)',
+      evening: 'Evening (3 PM - 6 PM)'
+    }
   },
   ta: {
     appName: 'TapGo',
-    tagline: 'இன்று காய்கறி ஆர்டர் செய்யுங்கள், நாளை காலையில் புதியதாக பெறுங்கள்!',
-    subTagline: '⏰ இரவு 10 மணிக்குள் ஆர்டர் செய்யுங்கள். அதிகாலை 4 மணிக்கு மார்க்கெட்டில் இருந்து ஃபிரெஷ்ஷாக வாங்கி நேரடியாக உங்கள் கடைக்கு டெலிவரி செய்கிறோம்!',
+    tagline: 'இன்று காய்கறி ஆர்டர் செய்யுங்கள், நாளை புதியதாக பெறுங்கள்!',
+    subTagline: '⏰ எப்போது வேண்டுமானாலும் ஆர்டர் செய்யுங்கள்! மார்க்கெட்டில் இருந்து ஃபிரெஷ்ஷாக வாங்கி நேரடியாக உங்கள் கடைக்கு டெலிவரி செய்கிறோம்!',
     bulkSourcing: 'நாங்கள் காய்கறி சப்ளை செய்யும் இடங்கள்:',
     searchPlaceholder: 'காய்கறிகளைத் தேடுங்கள்...',
-    placeOrderInfo: '⏰ இன்று இரவு 10:00 மணிக்குள் ஆர்டர் செய்யுங்கள். நாளை அதிகாலை 4 மணிக்கு மார்க்கெட்டில் இருந்து புதியதாக வாங்கி நேரடியாக உங்களுக்கு டெலிவரி செய்கிறோம்!',
+    placeOrderInfo: '⏰ எப்போது வேண்டுமானாலும் ஆர்டர் செய்யுங்கள். நாளை மார்க்கெட்டில் இருந்து புதியதாக வாங்கி நீங்கள் விரும்பும் நேரத்தில் டெலிவரி செய்கிறோம்!',
     categoriesLabel: 'காய்கறி பட்டியல்',
     addToCart: 'சேர்க்க',
     added: 'சேர்க்கப்பட்டது',
@@ -94,7 +101,7 @@ export const translations = {
     item: 'பொருள்',
     total: 'மொத்தம்',
     deliveryTime: 'டெலிவரி நேரம்',
-    deliveryTimeVal: 'நாளை காலை (6 மணி முதல் 9 மணி வரை)',
+    deliveryTimeVal: 'நாளை',
     deliveryCharge: 'டெலிவரி கட்டணம்',
     free: 'இலவசம்',
     grandTotal: 'மொத்த தொகை',
@@ -149,7 +156,14 @@ export const translations = {
       store: 'மளிகை கடை / Grocery Store',
       bulk: 'மொத்த கொள்முதல் / Bulk Buyer'
     },
-    quickNote: 'குறிப்பு: காய்கறி விலைகள் தினசரி மாறும். வாங்கும் நேரத்தில் சிறந்த மொத்த விலை உங்களுக்கு வழங்கப்படும்!'
+    quickNote: 'குறிப்பு: காய்கறி விலைகள் தினசரி மாறும். வாங்கும் நேரத்தில் சிறந்த மொத்த விலை உங்களுக்கு வழங்கப்படும்!',
+    deliveryTimingLabel: 'விருப்பமான டெலிவரி நேரம்',
+    timeSlots: {
+      morning: 'காலை (6 AM - 9 AM)',
+      lateMorning: 'நண்பகல் (9 AM - 12 PM)',
+      afternoon: 'மதியம் (12 PM - 3 PM)',
+      evening: 'மாலை (3 PM - 6 PM)'
+    }
   }
 };
 
@@ -173,8 +187,12 @@ export const LanguageProvider = ({ children }) => {
     return translations[lang].businessTypes[key] || key;
   };
 
+  const tTime = (key) => {
+    return translations[lang].timeSlots[key] || key;
+  };
+
   return (
-    <LanguageContext.Provider value={{ lang, toggleLanguage, t, tBiz }}>
+    <LanguageContext.Provider value={{ lang, toggleLanguage, t, tBiz, tTime }}>
       {children}
     </LanguageContext.Provider>
   );

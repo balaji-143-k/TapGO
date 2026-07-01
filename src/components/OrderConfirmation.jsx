@@ -4,7 +4,7 @@ import { stripName } from '../utils/nameUtils';
 import { CheckCircle2, MessageSquare, ArrowLeft, Star, RefreshCw } from 'lucide-react';
 
 export default function OrderConfirmation({ order, onBackToStore, supportPhone = '919626815733' }) {
-  const { lang, t, tBiz } = useLanguage();
+  const { lang, t, tBiz, tTime } = useLanguage();
   
   if (!order) return null;
 
@@ -39,7 +39,7 @@ export default function OrderConfirmation({ order, onBackToStore, supportPhone =
 ${itemsText}
 
 💰 *Total Amount:* ₹${order.totalAmount}
-${totalSavings > 0 ? `💚 *Market Savings:* ₹${totalSavings}\n` : ''}🚚 *Delivery:* ${t('deliveryTimeVal')}
+${totalSavings > 0 ? `💚 *Market Savings:* ₹${totalSavings}\n` : ''}🚚 *Delivery:* ${t('deliveryTimeVal')} (${order.deliveryTime ? tTime(order.deliveryTime) : tTime('morning')})
 ${order.deliveryNote ? `\n📝 *Note:* ${order.deliveryNote}` : ''}
 ━━━━━━━━━━━━━━━━━━━━━
 _Please confirm this order ASAP!_`;
@@ -123,7 +123,7 @@ _Please confirm this order ASAP!_`;
             <div className="col-span-2 text-right text-slate-800">{tBiz(order.businessType)}</div>
             
             <div className="text-slate-400 font-bold">{t('deliveryTime')}</div>
-            <div className="col-span-2 text-right text-emerald-700 font-extrabold">{t('deliveryTimeVal')}</div>
+            <div className="col-span-2 text-right text-emerald-700 font-extrabold">{t('deliveryTimeVal')} ({order.deliveryTime ? tTime(order.deliveryTime) : tTime('morning')})</div>
 
             {order.deliveryNote && (
               <>
